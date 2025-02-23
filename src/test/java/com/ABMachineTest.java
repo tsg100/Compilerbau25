@@ -10,11 +10,15 @@ public class ABMachineTest extends MachineTestBase {
 
     @Test
     public void testAccept() throws Exception {
+        testWord("AB", true);
         testWord("AABBBB", true);
+        testWord("ABB", true);
+        testWord("B", true);
     }
 
     @Test
     public void testNoAccept() throws Exception {
         testWord("BBBBAA", false);
+        testWord("A", false);
     }
 }
