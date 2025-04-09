@@ -1,4 +1,4 @@
-package com.compiler.machnines;
+package com.compiler.machines;
 
 import com.MachineTestBase;
 import org.junit.Test;
