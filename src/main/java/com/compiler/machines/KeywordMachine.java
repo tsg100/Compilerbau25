@@ -13,7 +13,11 @@ public class KeywordMachine extends StateMachine {
     
     private String detectedKeyword;
     
-    public KeywordMachine(String detectedKeyword) {
+    public KeywordMachine() {
+		super();
+	}
+
+	public KeywordMachine(String detectedKeyword) {
 		this.detectedKeyword = detectedKeyword;
 	}
 
