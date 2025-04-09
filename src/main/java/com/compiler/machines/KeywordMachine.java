@@ -11,7 +11,13 @@ public class KeywordMachine extends StateMachine {
 
     private List<State> stateList = new ArrayList<>();
     
-    @Override
+    private String detectedKeyword;
+    
+    public KeywordMachine(String detectedKeyword) {
+		this.detectedKeyword = detectedKeyword;
+	}
+
+	@Override
     public void initStateTable() {
         List<String> keywords = List.of(
         		"if",
@@ -92,6 +98,6 @@ public class KeywordMachine extends StateMachine {
 
     @Override
     public Type getType() {
-        return Type.EOF;
+        return Type.valueOf(detectedKeyword);
     }
 }
