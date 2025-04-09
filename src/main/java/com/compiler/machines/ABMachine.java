@@ -18,7 +18,7 @@ public class ABMachine extends com.compiler.StateMachine {
     }
 
     public com.compiler.TokenIntf.Type getType() {
-        return com.compiler.TokenIntf.Type.EOF;
+        return com.compiler.TokenIntf.Type.IDENT;
     }
 
 }
