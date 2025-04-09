@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import com.compiler.machines.ABMachine;
 
-public class LexerSkeleton implements LexerIntf {
+public class Lexer implements LexerIntf {
 
     static class MachineInfo {
 
@@ -27,7 +27,7 @@ public class LexerSkeleton implements LexerIntf {
     protected MultiLineInputReader m_input;
     protected Token m_currentToken;
 
-    public LexerSkeleton() {
+    public Lexer() {
         m_machineList = new Vector<MachineInfo>();
         addLexerMachines();
     }
