@@ -35,7 +35,51 @@ public class Lexer implements LexerIntf {
     private void addLexerMachines() {
         addMachine(new com.compiler.machines.BlockCommentMachine());
         addMachine(new com.compiler.machines.Characterliteral());
-        addMachine(new com.compiler.machines.KeywordMachine());
+
+        addKeywordMachine("*", com.compiler.TokenIntf.Type.MUL);
+        addKeywordMachine("/", com.compiler.TokenIntf.Type.DIV);
+        addKeywordMachine("+", com.compiler.TokenIntf.Type.PLUS);
+        addKeywordMachine("-", com.compiler.TokenIntf.Type.MINUS);
+        addKeywordMachine("&", com.compiler.TokenIntf.Type.BITAND);
+        addKeywordMachine("|", com.compiler.TokenIntf.Type.BITOR);
+        addKeywordMachine("<<", com.compiler.TokenIntf.Type.SHIFTLEFT);
+        addKeywordMachine(">>", com.compiler.TokenIntf.Type.SHIFTRIGHT);
+        addKeywordMachine("==", com.compiler.TokenIntf.Type.EQUAL);
+        addKeywordMachine("<", com.compiler.TokenIntf.Type.LESS);
+        addKeywordMachine(">", com.compiler.TokenIntf.Type.GREATER);
+        addKeywordMachine("!", com.compiler.TokenIntf.Type.NOT);
+        addKeywordMachine("&&", com.compiler.TokenIntf.Type.AND);
+        addKeywordMachine("||", com.compiler.TokenIntf.Type.OR);
+        addKeywordMachine("?", com.compiler.TokenIntf.Type.QUESTIONMARK);
+        addKeywordMachine(":", com.compiler.TokenIntf.Type.DOUBLECOLON);
+        addKeywordMachine("(", com.compiler.TokenIntf.Type.LPAREN);
+        addKeywordMachine(")", com.compiler.TokenIntf.Type.RPAREN);
+        addKeywordMachine("{", com.compiler.TokenIntf.Type.LBRACE);
+        addKeywordMachine("}", com.compiler.TokenIntf.Type.RBRACE);
+        addKeywordMachine(";", com.compiler.TokenIntf.Type.SEMICOLON);
+        addKeywordMachine(",", com.compiler.TokenIntf.Type.COMMA);
+        addKeywordMachine("=", com.compiler.TokenIntf.Type.ASSIGN);
+
+        addKeywordMachine("DECLARE", com.compiler.TokenIntf.Type.DECLARE);
+        addKeywordMachine("PRINT", com.compiler.TokenIntf.Type.PRINT);
+        addKeywordMachine("IF", com.compiler.TokenIntf.Type.IF);
+        addKeywordMachine("ELSE", com.compiler.TokenIntf.Type.ELSE);
+        addKeywordMachine("WHILE", com.compiler.TokenIntf.Type.WHILE);
+        addKeywordMachine("DO", com.compiler.TokenIntf.Type.DO);
+        addKeywordMachine("FOR", com.compiler.TokenIntf.Type.FOR);
+        addKeywordMachine("LOOP", com.compiler.TokenIntf.Type.LOOP);
+        addKeywordMachine("ENDLOOP", TokenIntf.Type.ENDLOOP);
+        addKeywordMachine("BREAK", com.compiler.TokenIntf.Type.BREAK);
+        addKeywordMachine("SWITCH", com.compiler.TokenIntf.Type.SWITCH);
+        addKeywordMachine("CASE", com.compiler.TokenIntf.Type.CASE);
+        addKeywordMachine("EXECUTE", com.compiler.TokenIntf.Type.EXECUTE);
+        addKeywordMachine("TIMES", com.compiler.TokenIntf.Type.TIMES);
+        addKeywordMachine("FUNCTION", com.compiler.TokenIntf.Type.FUNCTION);
+        addKeywordMachine("CALL", com.compiler.TokenIntf.Type.CALL);
+        addKeywordMachine("RETURN", com.compiler.TokenIntf.Type.RETURN);
+        addKeywordMachine("BLOCK", com.compiler.TokenIntf.Type.BLOCK);
+        addKeywordMachine("DEFAULT", com.compiler.TokenIntf.Type.DEFAULT);
+
         addMachine(new com.compiler.machines.IdentifierMachine());
         addMachine(new com.compiler.machines.IntegerMachine());
         addMachine(new com.compiler.machines.LineCommentMachine());
@@ -52,7 +96,7 @@ public class Lexer implements LexerIntf {
     }
 
     public void addKeywordMachine(String keyword, TokenIntf.Type tokenType) {
-        // m_machineList.add(new MachineInfo(new KeywordMachine(keyword, tokenType)));
+        m_machineList.add(new MachineInfo(new com.compiler.machines.KeywordMachine(keyword, tokenType)));
     }
 
     public void initMachines(String input) {

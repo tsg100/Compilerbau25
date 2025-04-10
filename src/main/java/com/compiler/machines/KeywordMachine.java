@@ -1,107 +1,34 @@
 package com.compiler.machines;
 
-import java.util.ArrayList;
-import java.util.List;
+public class KeywordMachine extends com.compiler.StateMachine {
+    private String keyword;
+    private com.compiler.TokenIntf.Type tokenType;
 
-import com.compiler.State;
-import com.compiler.StateMachine;
-import com.compiler.TokenIntf.Type;
+    public KeywordMachine(String keyword, com.compiler.TokenIntf.Type tokenType) {
+        this.keyword = keyword;
+        this.tokenType = tokenType;
+    }
 
-public class KeywordMachine extends StateMachine {
-
-    private List<State> stateList = new ArrayList<>();
-    
-    private String detectedKeyword;
-    
-    public KeywordMachine() {
-		super();
-	}
-
-	public KeywordMachine(String detectedKeyword) {
-		this.detectedKeyword = detectedKeyword;
-	}
-
-	@Override
     public void initStateTable() {
-        List<String> keywords = List.of(
-        		"if",
-        		"else",
-        		"while",
-        		"do",
-        		"for",
-        		"loop",
-        		"endloop",
-        		"break",
-        		"switch",
-        		"case",
-        		"execute",
-        		"times",
-        		"function",
-        		"call",
-        		"return",
-        		"block",
-        		"default");
-
-        State startState = new State("S", false);
-        stateList.add(startState); 
-
+        com.compiler.State startState = new com.compiler.State("0", false);
+        startState.addTransition(this.keyword.charAt(0), "1");
         addState(startState);
-
-        keywords.stream().forEach(keyword -> addStatesForKeyword(keyword));
-    }
-
-    /**
-     * Diese Methode added jeden Zustand nach den Zeichen. Bei return ist
-     * es beispielsweise r,re,ret,retu,retur,return. Es geht vom vorherigen
-     * Zustand aus und verlinkt es für den Neuen. Es wird bei jedem Durchgang 
-     * geschaut, ob der State schon angelegt wurde in {@link #stateList}. 
-     * Wenn nicht, wird es angelegt.
-     * 
-     * @param keyword
-     */
-    private void addStatesForKeyword(String keyword) {
-        String currentStateName = "S";
-        State currentState = findStateByName(currentStateName);
-        char[] characters = keyword.toCharArray();
-        
-        for (int i = 0; i < characters.length; i++) {
-            
-        	char c = characters[i];
-            String nextStateName = currentStateName.equals("S") ? String.valueOf(c) : currentStateName + c;
-
-            State nextState = findStateByName(nextStateName);
-            
-            if (nextState == null) {
-                boolean isFinal = (i == characters.length - 1);
-                nextState = new State(nextStateName, isFinal);
-                addState(nextState);
-                stateList.add(nextState);
-            }
-
-            currentState.addTransition(c, nextStateName);
-
-            currentState = nextState;
-            currentStateName = nextStateName;
-        
+        for (int i = 1; i < this.keyword.length(); i++) {
+            com.compiler.State state = new com.compiler.State(String.valueOf(i), false);
+            state.addTransition(this.keyword.charAt(i), String.valueOf(i + 1));
+            addState(state);
         }
-    }
-
-    private State findStateByName(String name) {
-        for (State s : stateList) {
-            if (s.getName().equals(name)) {
-                return s;
-            }
-        }
-        return null;
+        com.compiler.State endState = new com.compiler.State(String.valueOf(this.keyword.length()), true);
+        addState(endState);
     }
 
     @Override
     public String getStartState() {
-        return "S";
+        return "0";
     }
 
-    @Override
-    public Type getType() {
-        return Type.valueOf(detectedKeyword);
+    public com.compiler.TokenIntf.Type getType() {
+        return tokenType;
     }
+
 }
