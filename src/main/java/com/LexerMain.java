@@ -8,7 +8,7 @@ public class LexerMain {
         com.compiler.Lexer lexer = new com.compiler.Lexer();
         OutputStreamWriter outStream = new OutputStreamWriter(System.out, "UTF-8");
 
-        lexer.processInput("AABB", outStream);
+        lexer.processInput("AABB ; //Hello\nBCD", outStream);
     }
 
 }
