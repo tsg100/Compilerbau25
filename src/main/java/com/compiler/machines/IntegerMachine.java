@@ -24,7 +24,7 @@ public class IntegerMachine extends StateMachine {
     }
 
     public Type getType() {
-        return Type.EOF;
+        return Type.INTEGER;
     }
 
 }

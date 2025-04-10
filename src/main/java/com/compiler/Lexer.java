@@ -33,7 +33,15 @@ public class Lexer implements LexerIntf {
     }
 
     private void addLexerMachines() {
-        addMachine(new ABMachine());
+        addMachine(new com.compiler.machines.BlockCommentMachine());
+        addMachine(new com.compiler.machines.Characterliteral());
+        addMachine(new com.compiler.machines.KeywordMachine());
+        addMachine(new com.compiler.machines.IdentifierMachine());
+        addMachine(new com.compiler.machines.IntegerMachine());
+        addMachine(new com.compiler.machines.LineCommentMachine());
+        addMachine(new com.compiler.machines.StringLiteral());
+        addMachine(new com.compiler.machines.WhitespaceMachine());
+
         // addKeywordMachine("*", com.compiler.TokenIntf.Type.MUL);
         // ...        
         // addMachine(new compiler.machines.IdentifierMachine());
@@ -60,6 +68,24 @@ public class Lexer implements LexerIntf {
     }
 
     public Token nextToken() throws Exception {
+        // check end of file
+        // initMachines
+        // while at least one machine running
+            // foreach machine
+                // if machine excluded
+                    // continue
+                // machine.nextStep()
+                // if machine has error
+                    // exclude machine
+                // if machine accepts
+                    // update accept pos for this machine
+            // endforeach // machine
+        // end while // at least one machine running
+        // if no machine has accept postion
+            // throw error
+        // select machine with highest accept position (if equal first machine wins)
+        // create token
+            
         return new Token();
     }
 

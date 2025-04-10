@@ -38,6 +38,6 @@ public class LineCommentMachine extends StateMachine {
 
     @Override
     public Type getType() {
-        return Type.STRING;
+        return Type.LINECOMMENT;
     }
 }

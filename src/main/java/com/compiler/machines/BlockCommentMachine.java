@@ -45,6 +45,6 @@ public class BlockCommentMachine extends StateMachine {
 
     @Override
     public TokenIntf.Type getType() {
-        return com.compiler.TokenIntf.Type.EOF;
+        return com.compiler.TokenIntf.Type.MULTILINECOMMENT;
     }
 }

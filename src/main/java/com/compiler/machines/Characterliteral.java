@@ -39,7 +39,7 @@ public class Characterliteral extends StateMachine {
 
 	@Override
 	public Type getType() {
-		return com.compiler.TokenIntf.Type.EOF;
+		return com.compiler.TokenIntf.Type.CHAR;
 	}
 
 }
