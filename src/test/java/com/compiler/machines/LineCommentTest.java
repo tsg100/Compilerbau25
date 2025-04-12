@@ -1,4 +1,4 @@
-package com;
+package com.compiler.machines;
 
 import com.compiler.machines.LineCommentMachine;
 import org.junit.Test;

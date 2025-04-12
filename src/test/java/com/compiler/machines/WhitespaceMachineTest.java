@@ -1,4 +1,4 @@
-package com;
+package com.compiler.machines;
 
 import com.compiler.machines.WhitespaceMachine;
 import org.junit.Test;

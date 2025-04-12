@@ -1,6 +1,5 @@
 package com.compiler.machines;
 
-import com.MachineTestBase;
 import org.junit.Test;
 
 public class StringLiteralTest extends MachineTestBase {

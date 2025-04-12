@@ -2,8 +2,6 @@ package com.compiler.machines;
 
 import org.junit.Test;
 
-import com.MachineTestBase;
-
 public class IdentifierMachineTest extends MachineTestBase {
 
     private void testWord(String word, Boolean expectOk) throws Exception {
