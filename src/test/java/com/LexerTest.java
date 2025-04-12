@@ -9,6 +9,7 @@ public class LexerTest extends LexerTestBase
     @Test
     public void testLexer() throws Exception
     {
-        // testLexer("AABB", "IDENT AABB\n");
+        testLexer("AABB", "IDENT AABB\n");
+        testLexer("// Kommentar\n123*", "LINECOMMENT // Kommentar\n\nINTEGER 123\nMUL *\n");
     }
 }
