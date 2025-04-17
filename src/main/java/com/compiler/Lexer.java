@@ -3,9 +3,7 @@ package com.compiler;
 import java.io.OutputStreamWriter;
 import java.util.Vector;
 
-import com.compiler.machines.ABMachine;
-
-public class Lexer implements LexerIntf {
+public class Lexer implements LexerIntf, LexerParserIntf {
 
     static class MachineInfo {
 
