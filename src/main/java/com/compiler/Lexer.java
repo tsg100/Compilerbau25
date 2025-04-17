@@ -190,7 +190,13 @@ public class Lexer implements LexerIntf, LexerParserIntf {
     }
 
     public void advance() throws Exception {
-        m_currentToken = nextToken();
+        Token token = nextToken();
+        while (token.m_type == Token.Type.WHITESPACE ||
+                token.m_type == Token.Type.MULTILINECOMMENT ||
+                token.m_type == Token.Type.LINECOMMENT) {
+            token = nextToken();
+        }
+        m_currentToken = token;
     }
 
     public void expect(Token.Type tokenType) throws Exception {

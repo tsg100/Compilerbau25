@@ -6,11 +6,9 @@ public class ParserExample {
 
     void parsePrint() throws Exception {
         m_lexer.expect(com.compiler.TokenIntf.Type.PRINT);
-        m_lexer.expect(com.compiler.TokenIntf.Type.WHITESPACE);
         com.compiler.Token number = m_lexer.lookAhead();
         m_lexer.expect(com.compiler.TokenIntf.Type.INTEGER);
         m_lexer.expect(com.compiler.TokenIntf.Type.SEMICOLON);
-        m_lexer.expect(com.compiler.TokenIntf.Type.WHITESPACE);
         System.out.println(number.m_value);
     }
 
@@ -32,8 +30,7 @@ public class ParserExample {
         parser.parse("""
                 PRINT 1;
                 PRINT 2;
-                PRINT 3;
-                """);
+                PRINT 3;""");
     }
 
 }
