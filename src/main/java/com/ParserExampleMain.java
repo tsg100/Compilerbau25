@@ -1,7 +1,7 @@
 package com;
 
 
-public class ParserExample {
+public class ParserExampleMain {
     com.compiler.Lexer m_lexer;
 
     void parsePrint() throws Exception {
@@ -26,7 +26,7 @@ public class ParserExample {
     }
 
     public static void main(String[] args) throws Exception {
-        ParserExample parser = new ParserExample();
+        ParserExampleMain parser = new ParserExampleMain();
         parser.parse("""
                 PRINT 1;
                 PRINT 2;
