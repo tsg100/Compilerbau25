@@ -29,8 +29,19 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
         return result;
     }
 
-
     int getUnaryExpr() throws Exception {
+        TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+        if (tokenType == TokenIntf.Type.MINUS) {
+            m_lexer.advance();
+            return -getDashExpr();
+        } else if (tokenType == TokenIntf.Type.NOT) {
+            m_lexer.advance();
+            if (getDashExpr() == 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
         return getDashExpr();
     }
 
@@ -100,7 +111,22 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+    	// shiftExpr = bitAndOrExpr shiftExprRecursive
+    	int result = getBitAndOrExpr();
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT
+        ) {
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance(); // getShiftOp()
+            int op = getBitAndOrExpr();
+            if (tokenType == TokenIntf.Type.SHIFTRIGHT) {
+                result = result >> op;
+            } else {
+            	result = result << op;
+            }
+        }
+        return result;
     }
 
     int getCompareExpr() throws Exception {
@@ -108,10 +134,50 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getAndOrExpr() throws Exception {
-        return getCompareExpr();
+        //handled separately
+        return getOrExpr();
+    }
+
+    int getOrExpr() throws Exception {
+        // orExpr: andExpr (orOp andExpr)*
+        int result = getAndExpr();
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.OR) {
+            m_lexer.advance(); // getOrOp()
+            int op = getAndExpr();
+            result = result == 0 && op == 0 ? 0 : 1;
+        }
+        return result;
+    }
+
+    int getAndExpr() throws Exception {
+        // andExpr: compareExpr (andOp compareExpr)*
+        int result = getCompareExpr();
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.AND) {
+            m_lexer.advance(); // getAndOp()
+            int op = getAndExpr();
+            result = result == 0 || op == 0 ? 0 : 1;
+        }
+        return result;
     }
 
     int getQuestionMarkExpr() throws Exception {
-        return getAndOrExpr();
+        int result = getAndOrExpr();
+        boolean predicate = result != 0;
+        
+        if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
+            m_lexer.advance();
+            int op1 = getQuestionMarkExpr();
+
+            if(m_lexer.lookAhead().m_type != TokenIntf.Type.DOUBLECOLON) throw new Exception("Colon expected in ternary operator");
+            
+            m_lexer.advance();
+            int op2 = getQuestionMarkExpr();
+
+
+
+            return predicate ? op1: op2;
+        } else {
+            return result;
+        }
     }
 }
