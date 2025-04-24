@@ -28,7 +28,32 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getMulDivExpr() throws Exception {
-        return getUnaryExpr();
+        
+        int result = getUnaryExpr();
+
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.MUL ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.DIV
+) {
+            TokenIntf.Type operator = m_lexer.lookAhead().m_type;
+
+            m_lexer.advance();
+
+            int operand2 = getUnaryExpr();
+
+            
+            if (operator == TokenIntf.Type.MUL) {
+                result = result * operand2;
+            }
+            else if (operator == TokenIntf.Type.DIV) {
+                result = result / operand2;
+            } else {
+                throw new Exception("Expected operator of type MUL or DIV got " + operator);
+            }
+            
+        }
+
+        return result;
     }
    
     int getPlusMinusExpr() throws Exception {
