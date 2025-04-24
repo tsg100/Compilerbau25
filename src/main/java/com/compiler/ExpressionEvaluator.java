@@ -3,18 +3,18 @@ package com.compiler;
 public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     private Lexer m_lexer;
 
-    public ExpressionEvaluator(Lexer lexer) {
+    public ExpressionEvaluator(final Lexer lexer) {
         m_lexer = lexer;
     }
 
     @Override
-    public int eval(String val) throws Exception {
+    public int eval(final String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
 
     int getParantheseExpr() throws Exception {
-        Token curToken = m_lexer.lookAhead();
+        final Token curToken = m_lexer.lookAhead();
         m_lexer.expect(Token.Type.INTEGER);
         return Integer.valueOf(curToken.m_value);
     }
@@ -38,9 +38,9 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
             m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
             m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
         ) {
-            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getSumOp()
-            int op = getMulDivExpr();
+            final int op = getMulDivExpr();
             if (tokenType == TokenIntf.Type.PLUS) {
                 result += op;
             } else {
@@ -51,7 +51,21 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getBitAndOrExpr() throws Exception {
-        return getPlusMinusExpr();
+        int result = getPlusMinusExpr();
+        while(
+            m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.BITOR
+        ) {
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance();
+            final int op = getPlusMinusExpr();
+            if (tokenType == TokenIntf.Type.BITAND) {
+                result &= op;
+            } else {
+                result |= op;
+            }
+        }
+        return result;
     }
 
     int getShiftExpr() throws Exception {

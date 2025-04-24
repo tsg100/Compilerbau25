@@ -1,0 +1,23 @@
+package com.compiler;
+
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+public class TestBitAndOrExpr extends TestExpressionEvaluatorBase {
+
+    @Test
+    public void testBitAndOrExpr() throws Exception {
+        // Check Java Compiler vs. unser Compiler
+      assertEquals(4|1, evalExpression("4|1"));
+      assertEquals(4&1, evalExpression("4&1"));
+
+      // Check Ergebnis vs. unser Compiler
+      assertEquals(5, evalExpression("4|1"));
+      assertEquals(0, evalExpression("4&1"));
+
+        // Komplexere Ausdrücke
+      assertEquals(4&3|1&5, evalExpression("4&3|1&5"));
+      assertEquals(1|2&3|7, evalExpression("1|2&3|7"));
+    }
+}
