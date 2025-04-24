@@ -117,7 +117,30 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getAndOrExpr() throws Exception {
-        return getCompareExpr();
+        //handled separately
+        return getOrExpr();
+    }
+
+    int getOrExpr() throws Exception {
+        // orExpr: andExpr (orOp andExpr)*
+        int result = getAndExpr();
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.OR) {
+            m_lexer.advance(); // getOrOp()
+            int op = getAndExpr();
+            result = result == 0 && op == 0 ? 0 : 1;
+        }
+        return result;
+    }
+
+    int getAndExpr() throws Exception {
+        // andExpr: compareExpr (andOp compareExpr)*
+        int result = getCompareExpr();
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.AND) {
+            m_lexer.advance(); // getAndOp()
+            int op = getAndExpr();
+            result = result == 0 || op == 0 ? 0 : 1;
+        }
+        return result;
     }
 
     int getQuestionMarkExpr() throws Exception {
