@@ -5,18 +5,18 @@ import com.compiler.TokenIntf.Type;
 public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     private Lexer m_lexer;
 
-    public ExpressionEvaluator(Lexer lexer) {
+    public ExpressionEvaluator(final Lexer lexer) {
         m_lexer = lexer;
     }
 
     @Override
-    public int eval(String val) throws Exception {
+    public int eval(final String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
 
     int getParantheseExpr() throws Exception {
-        Token curToken = m_lexer.lookAhead();
+        final Token curToken = m_lexer.lookAhead();
         m_lexer.expect(Token.Type.INTEGER);
         return Integer.valueOf(curToken.m_value);
     }
@@ -30,7 +30,32 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getMulDivExpr() throws Exception {
-        return getUnaryExpr();
+        
+        int result = getUnaryExpr();
+
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.MUL ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.DIV
+) {
+            TokenIntf.Type operator = m_lexer.lookAhead().m_type;
+
+            m_lexer.advance();
+
+            int operand2 = getUnaryExpr();
+
+            
+            if (operator == TokenIntf.Type.MUL) {
+                result = result * operand2;
+            }
+            else if (operator == TokenIntf.Type.DIV) {
+                result = result / operand2;
+            } else {
+                throw new Exception("Expected operator of type MUL or DIV got " + operator);
+            }
+            
+        }
+
+        return result;
     }
    
     int getPlusMinusExpr() throws Exception {
@@ -40,9 +65,9 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
             m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
             m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
         ) {
-            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getSumOp()
-            int op = getMulDivExpr();
+            final int op = getMulDivExpr();
             if (tokenType == TokenIntf.Type.PLUS) {
                 result += op;
             } else {
@@ -53,11 +78,40 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getBitAndOrExpr() throws Exception {
-        return getPlusMinusExpr();
+        int result = getPlusMinusExpr();
+        while(
+            m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.BITOR
+        ) {
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance();
+            final int op = getPlusMinusExpr();
+            if (tokenType == TokenIntf.Type.BITAND) {
+                result &= op;
+            } else {
+                result |= op;
+            }
+        }
+        return result;
     }
 
     int getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+    	// shiftExpr = bitAndOrExpr shiftExprRecursive
+    	int result = getBitAndOrExpr();
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT
+        ) {
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance(); // getShiftOp()
+            int op = getBitAndOrExpr();
+            if (tokenType == TokenIntf.Type.SHIFTRIGHT) {
+                result = result >> op;
+            } else {
+            	result = result << op;
+            }
+        }
+        return result;
     }
 
     int getCompareExpr() throws Exception {
