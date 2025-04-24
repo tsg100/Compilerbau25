@@ -22,8 +22,20 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     int getDashExpr() throws Exception {
         return getParantheseExpr();
     }
-    
+
     int getUnaryExpr() throws Exception {
+        TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+        if (tokenType == TokenIntf.Type.MINUS) {
+            m_lexer.advance();
+            return -getDashExpr();
+        } else if (tokenType == TokenIntf.Type.NOT) {
+            m_lexer.advance();
+            if (getDashExpr() == 0) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
         return getDashExpr();
     }
 
@@ -55,13 +67,13 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
 
         return result;
     }
-   
+
     int getPlusMinusExpr() throws Exception {
         // sumExpr: mulExpr (sumOp mulExpr)*
         int result = getMulDivExpr();
         while (
-            m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
-            m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
+                m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
+                        m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
         ) {
             final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getSumOp()
