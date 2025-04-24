@@ -94,7 +94,22 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+    	// shiftExpr = bitAndOrExpr shiftExprRecursive
+    	int result = getBitAndOrExpr();
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT
+        ) {
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance(); // getShiftOp()
+            int op = getBitAndOrExpr();
+            if (tokenType == TokenIntf.Type.SHIFTRIGHT) {
+                result = result >> op;
+            } else {
+            	result = result << op;
+            }
+        }
+        return result;
     }
 
     int getCompareExpr() throws Exception {
