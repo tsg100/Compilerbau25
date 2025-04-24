@@ -67,13 +67,12 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
 
         return result;
     }
-
     int getPlusMinusExpr() throws Exception {
         // sumExpr: mulExpr (sumOp mulExpr)*
         int result = getMulDivExpr();
         while (
-                m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
-                        m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
+            m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
         ) {
             final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getSumOp()
