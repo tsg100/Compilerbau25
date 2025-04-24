@@ -126,6 +126,7 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
         ) {
             TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance();
+
             switch (tokenType){
                 case GREATER:
                     if(input > getShiftExpr()){
