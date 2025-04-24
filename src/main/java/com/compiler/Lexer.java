@@ -34,6 +34,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         addMachine(new com.compiler.machines.BlockCommentMachine());
         addMachine(new com.compiler.machines.Characterliteral());
 
+        addKeywordMachine("^", TokenIntf.Type.TDASH);
         addKeywordMachine("*", com.compiler.TokenIntf.Type.MUL);
         addKeywordMachine("/", com.compiler.TokenIntf.Type.DIV);
         addKeywordMachine("+", com.compiler.TokenIntf.Type.PLUS);
