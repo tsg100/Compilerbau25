@@ -53,6 +53,7 @@ public abstract class TokenIntf {
 		RETURN,
 		BLOCK,
 		DEFAULT,
+		TDASH,
 	}
 
 	public Type m_type;
