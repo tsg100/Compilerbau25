@@ -30,9 +30,23 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     int getMulDivExpr() throws Exception {
         return getUnaryExpr();
     }
-
+   
     int getPlusMinusExpr() throws Exception {
+        // sumExpr: mulExpr (sumOp mulExpr)*
         int result = getMulDivExpr();
+        while (
+            m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
+            m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
+        ) {
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance(); // getSumOp()
+            int op = getMulDivExpr();
+            if (tokenType == TokenIntf.Type.PLUS) {
+                result += op;
+            } else {
+                result -= op;
+            }
+        }
         return result;
     }
 
