@@ -1,5 +1,7 @@
 package com.compiler;
 
+import com.compiler.TokenIntf.Type;
+
 public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     private Lexer m_lexer;
 
@@ -130,7 +132,44 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getCompareExpr() throws Exception {
-        return getShiftExpr();
+        // compareExp: shiftExp (compOp shiftExp)*
+        int input = getShiftExpr();
+
+
+        while (
+                m_lexer.lookAhead().m_type == Type.EQUAL ||
+                m_lexer.lookAhead().m_type == Type.GREATER ||
+                m_lexer.lookAhead().m_type == Type.LESS
+        ) {
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            m_lexer.advance();
+
+            switch (tokenType){
+                case GREATER:
+                    if(input > getShiftExpr()){
+                        input = 1;
+                    }else {
+                        input = 0;
+                    }
+                    break;
+                case LESS:
+                    if(input < getShiftExpr()){
+                        input = 1;
+                    }else {
+                        input = 0;
+                    }
+                    break;
+                case EQUAL:
+                    if(input == getShiftExpr()){
+                        input = 1;
+                    }else {
+                        input = 0;
+                    }
+                    break;
+            }
+        }
+
+        return input;
     }
 
     int getAndOrExpr() throws Exception {
