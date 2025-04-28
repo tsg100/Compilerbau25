@@ -8,7 +8,7 @@ public class TestPlusMinusExprParser extends TestExpressionParserBase {
 
     @Test
     public void testPlusMinusExpr() throws Exception {
-      assertEquals(5, evalExpression("5"));
+      assertEquals(5 - 3 - 2, evalExpression("5 -3-2"));
     }
 
 }

@@ -211,19 +211,18 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getQuestionMarkExpr() throws Exception {
+        // questionMarkExpr : andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)?
         int result = getAndOrExpr();
         boolean predicate = result != 0;
         
         if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
-            m_lexer.advance();
+            m_lexer.advance(); // QUESTIONMARK
             int op1 = getQuestionMarkExpr();
 
             if(m_lexer.lookAhead().m_type != TokenIntf.Type.DOUBLECOLON) throw new Exception("Colon expected in ternary operator");
             
             m_lexer.advance();
             int op2 = getQuestionMarkExpr();
-
-
 
             return predicate ? op1: op2;
         } else {

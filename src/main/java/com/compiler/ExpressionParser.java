@@ -15,7 +15,11 @@ public class ExpressionParser {
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
-        return new ASTIntegerLiteralNode(m_lexer.lookAhead().m_value);
+        // parentheseExpr : INTEGER
+        Token curToken = m_lexer.lookAhead();
+        m_lexer.expect(TokenIntf.Type.INTEGER);
+        ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+        return result;
     }
 
     ASTExprNode getDashExpr() throws Exception {
@@ -31,7 +35,16 @@ public class ExpressionParser {
     }
     
     ASTExprNode getPlusMinusExpr() throws Exception {
-        return getMulDivExpr();
+        // plusMinusExpr: mulDivExpr ((PLUS|MINUS) mulDivExpr)*
+        ASTExprNode result = getMulDivExpr();
+        // SELECTION SET for (PLUS|MINUS) mulDivExpr
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS || m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS) {
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance(); // PLUS|MINUS
+            ASTExprNode operand = getMulDivExpr();
+            result = new ASTPlusMinusExprNode(result, operand, curToken.m_type);
+        }
+        return result;
     }
 
     ASTExprNode getBitAndOrExpr() throws Exception {        
