@@ -23,7 +23,7 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
             return Integer.valueOf(curToken.m_value);    
         } else if (curToken.m_type == TokenIntf.Type.LPAREN) {
             m_lexer.advance(); // LPAREN
-            int result = getQuestionMarkExpr();
+            final int result = getQuestionMarkExpr();
             m_lexer.expect(TokenIntf.Type.RPAREN);
             return result;
         } else {
@@ -36,14 +36,14 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
         int result = getParantheseExpr();
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.TDASH) {
             m_lexer.advance();
-            int op = getParantheseExpr();
+            final int op = getParantheseExpr();
             result = (int) Math.pow(result, op);
         }
         return result;
     }
 
     int getUnaryExpr() throws Exception {
-        TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+        final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
         if (tokenType == TokenIntf.Type.MINUS) {
             m_lexer.advance();
             return -getDashExpr();
@@ -66,11 +66,11 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
                 m_lexer.lookAhead().m_type == TokenIntf.Type.MUL ||
                         m_lexer.lookAhead().m_type == TokenIntf.Type.DIV
         ) {
-            TokenIntf.Type operator = m_lexer.lookAhead().m_type;
+            final TokenIntf.Type operator = m_lexer.lookAhead().m_type;
 
             m_lexer.advance();
 
-            int operand2 = getUnaryExpr();
+            final int operand2 = getUnaryExpr();
 
 
             if (operator == TokenIntf.Type.MUL) {
@@ -106,19 +106,29 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getBitAndOrExpr() throws Exception {
+        return getBitOr();
+    }
+
+    int getBitAnd() throws Exception {
+        // bitAndExpr: plusMinusExpr (BITAND bitAndExpr)*
+        // ACHTUNG: & hat höhere Priorität, daher haben wir zwei einzelne Funktionen erstellt.
+        // Das sich für die anderen nichts ändert, geben wir hier einfach das bitOr zurück!
         int result = getPlusMinusExpr();
-        while (
-                m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND ||
-                        m_lexer.lookAhead().m_type == TokenIntf.Type.BITOR
-        ) {
-            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND) {
             m_lexer.advance();
             final int op = getPlusMinusExpr();
-            if (tokenType == TokenIntf.Type.BITAND) {
-                result &= op;
-            } else {
-                result |= op;
-            }
+            result &= op;
+        }
+        return result;
+    }
+
+    int getBitOr() throws Exception {
+        // bitOrExpr: bitAndExpr (BITOR bitOrExpr)*
+        int result = getBitAnd();
+        while (m_lexer.lookAhead().m_type == Type.BITOR) {
+            m_lexer.advance();
+            final int op = getBitAnd();
+            result |= op;
         }
         return result;
     }
@@ -130,9 +140,9 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
             m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT ||
             m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT
         ) {
-            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getShiftOp()
-            int op = getBitAndOrExpr();
+            final int op = getBitAndOrExpr();
             if (tokenType == TokenIntf.Type.SHIFTRIGHT) {
                 result = result >> op;
             } else {
@@ -152,7 +162,7 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
                 m_lexer.lookAhead().m_type == Type.GREATER ||
                 m_lexer.lookAhead().m_type == Type.LESS
         ) {
-            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance();
 
             switch (tokenType){
@@ -193,7 +203,7 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
         int result = getAndExpr();
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.OR) {
             m_lexer.advance(); // getOrOp()
-            int op = getAndExpr();
+            final int op = getAndExpr();
             result = result == 0 && op == 0 ? 0 : 1;
         }
         return result;
@@ -204,7 +214,7 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
         int result = getCompareExpr();
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.AND) {
             m_lexer.advance(); // getAndOp()
-            int op = getAndExpr();
+            final int op = getAndExpr();
             result = result == 0 || op == 0 ? 0 : 1;
         }
         return result;
@@ -212,17 +222,17 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
 
     int getQuestionMarkExpr() throws Exception {
         // questionMarkExpr : andOrExpr (QUESTIONMARK questionMarkExpr DOUBLECOLON questionMarkExpr)?
-        int result = getAndOrExpr();
-        boolean predicate = result != 0;
+        final int result = getAndOrExpr();
+        final boolean predicate = result != 0;
         
         if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
             m_lexer.advance(); // QUESTIONMARK
-            int op1 = getQuestionMarkExpr();
+            final int op1 = getQuestionMarkExpr();
 
             if(m_lexer.lookAhead().m_type != TokenIntf.Type.DOUBLECOLON) throw new Exception("Colon expected in ternary operator");
             
             m_lexer.advance();
-            int op2 = getQuestionMarkExpr();
+            final int op2 = getQuestionMarkExpr();
 
             return predicate ? op1: op2;
         } else {

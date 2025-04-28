@@ -5,20 +5,20 @@ import com.compiler.ast.*;
 public class ExpressionParser {
     private Lexer m_lexer;
 
-    public ExpressionParser(Lexer lexer) {
+    public ExpressionParser(final Lexer lexer) {
         m_lexer = lexer;
     }
     
-    public ASTExprNode parseExpression(String val) throws Exception {
+    public ASTExprNode parseExpression(final String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
         // parentheseExpr : INTEGER
-        Token curToken = m_lexer.lookAhead();
+        final Token curToken = m_lexer.lookAhead();
         m_lexer.expect(TokenIntf.Type.INTEGER);
-        ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+        final ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
         return result;
     }
 
@@ -39,17 +39,47 @@ public class ExpressionParser {
         ASTExprNode result = getMulDivExpr();
         // SELECTION SET for (PLUS|MINUS) mulDivExpr
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS || m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS) {
-            Token curToken = m_lexer.lookAhead();
+            final Token curToken = m_lexer.lookAhead();
             m_lexer.advance(); // PLUS|MINUS
-            ASTExprNode operand = getMulDivExpr();
+            final ASTExprNode operand = getMulDivExpr();
             result = new ASTPlusMinusExprNode(result, operand, curToken.m_type);
         }
         return result;
     }
 
-    ASTExprNode getBitAndOrExpr() throws Exception {        
-        return getPlusMinusExpr();
+    ASTExprNode getBitAndOrExpr() throws Exception {
+        // bitExpr: plusMinusExpr ((AND|OR) bitExpr)*
+        // ACHTUNG: & hat höhere Priorität, daher haben wir zwei einzelne Funktionen erstellt.
+        // Das sich für die anderen nichts ändert, geben wir hier einfach das bitOr zurück!
+        return getBitOrExpr();
     }
+
+
+    ASTExprNode getBitAndExpr() throws Exception {
+        ASTExprNode result = getPlusMinusExpr();
+
+        while(m_lexer.lookAhead().m_type == Type.BITAND) {
+            final Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            final ASTExprNode operand = getPlusMinusExpr();
+            result = new ASTBitAndExprNode(result, operand, curToken.m_type);
+        }
+        return result;
+    }
+
+
+    ASTExprNode getBitOrExpr() throws Exception {
+        ASTExprNode result = getBitAndExpr();
+
+        while(m_lexer.lookAhead().m_type == Type.BITOR) {
+            final Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            final ASTExprNode operand = getBitAndExpr();
+            result = new ASTBitOrExprNode(result, operand, curToken.m_type);
+        }
+        return result;
+    }
+
 
     ASTExprNode getShiftExpr() throws Exception {
         return getBitAndOrExpr();
