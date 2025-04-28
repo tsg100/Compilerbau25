@@ -5,20 +5,20 @@ import com.compiler.ast.*;
 public class ExpressionParser {
     private Lexer m_lexer;
 
-    public ExpressionParser(final Lexer lexer) {
+    public ExpressionParser(Lexer lexer) {
         m_lexer = lexer;
     }
     
-    public ASTExprNode parseExpression(final String val) throws Exception {
+    public ASTExprNode parseExpression(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
 
     ASTExprNode getParantheseExpr() throws Exception {
         // parentheseExpr : INTEGER
-        final Token curToken = m_lexer.lookAhead();
+        Token curToken = m_lexer.lookAhead();
         m_lexer.expect(TokenIntf.Type.INTEGER);
-        final ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+        ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
         return result;
     }
 
@@ -39,9 +39,9 @@ public class ExpressionParser {
         ASTExprNode result = getMulDivExpr();
         // SELECTION SET for (PLUS|MINUS) mulDivExpr
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS || m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS) {
-            final Token curToken = m_lexer.lookAhead();
+            Token curToken = m_lexer.lookAhead();
             m_lexer.advance(); // PLUS|MINUS
-            final ASTExprNode operand = getMulDivExpr();
+            ASTExprNode operand = getMulDivExpr();
             result = new ASTPlusMinusExprNode(result, operand, curToken.m_type);
         }
         return result;
@@ -59,9 +59,9 @@ public class ExpressionParser {
         ASTExprNode result = getPlusMinusExpr();
 
         while(m_lexer.lookAhead().m_type == Type.BITAND) {
-            final Token curToken = m_lexer.lookAhead();
+            Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
-            final ASTExprNode operand = getPlusMinusExpr();
+            ASTExprNode operand = getPlusMinusExpr();
             result = new ASTBitAndExprNode(result, operand, curToken.m_type);
         }
         return result;
@@ -72,9 +72,9 @@ public class ExpressionParser {
         ASTExprNode result = getBitAndExpr();
 
         while(m_lexer.lookAhead().m_type == Type.BITOR) {
-            final Token curToken = m_lexer.lookAhead();
+            Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
-            final ASTExprNode operand = getBitAndExpr();
+            ASTExprNode operand = getBitAndExpr();
             result = new ASTBitOrExprNode(result, operand, curToken.m_type);
         }
         return result;
