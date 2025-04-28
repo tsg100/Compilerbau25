@@ -16,9 +16,20 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getParantheseExpr() throws Exception {
+        // LPAREN questionMarkExpr RPAREN | INTEGER
         final Token curToken = m_lexer.lookAhead();
-        m_lexer.expect(Token.Type.INTEGER);
-        return Integer.valueOf(curToken.m_value);
+        if (curToken.m_type == TokenIntf.Type.INTEGER) {
+            m_lexer.advance(); // INTEGER
+            return Integer.valueOf(curToken.m_value);    
+        } else if (curToken.m_type == TokenIntf.Type.LPAREN) {
+            m_lexer.advance(); // LPAREN
+            int result = getQuestionMarkExpr();
+            m_lexer.expect(TokenIntf.Type.RPAREN);
+            return result;
+        } else {
+            m_lexer.throwCompilerException("unexpected token", "integer or parenthese");
+            return 0;
+        }
     }
 
     int getDashExpr() throws Exception {    // sumExpr: mulExpr (sumOp mulExpr)*
