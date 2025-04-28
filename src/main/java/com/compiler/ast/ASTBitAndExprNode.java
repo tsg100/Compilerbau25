@@ -19,11 +19,7 @@ public class ASTBitAndExprNode extends ASTExprNode {
     public int eval() {
        final int operand0 = m_operand0.eval();
        final int operand1 = m_operand1.eval();
-       if (m_operator == TokenIntf.Type.BITAND) {
-          return operand0 & operand1;
-       } else {
-           return operand0 | operand1;
-       }
+       return operand0 & operand1;
     }
 
     public void print(final OutputStreamWriter outStream, final String indent) throws Exception {}
