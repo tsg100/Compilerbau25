@@ -89,8 +89,31 @@ public class ExpressionParser {
         return getShiftExpr();
     }
 
+    ASTExprNode getAndExpr() throws Exception {
+        // andExpr: compareExpr (AND compareExpr)*
+        ASTExprNode result = getCompareExpr();
+        // SELECTION SET for AND compareExpr
+        while (m_lexer.lookAhead().m_type == Type.AND) {
+            m_lexer.advance(); // AND
+            result = new ASTAndOrExprNode(result, getCompareExpr(), Type.AND);
+        }
+        return result;
+    }
+
+    ASTExprNode getOrExpr() throws Exception {
+        // orExpr: andExpr (OR andExpr)*
+        ASTExprNode result = getAndExpr();
+        // SELECTION SET for OR andExpr
+        while (m_lexer.lookAhead().m_type == Type.OR) {
+            m_lexer.advance(); // OR
+            result = new ASTAndOrExprNode(result, getAndExpr(), Type.OR);
+        }
+        return result;
+    }
+
     ASTExprNode getAndOrExpr() throws Exception {
-        return getCompareExpr();
+        //handled separately
+        return getOrExpr();
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
