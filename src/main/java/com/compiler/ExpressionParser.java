@@ -23,7 +23,14 @@ public class ExpressionParser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        return getParantheseExpr();
+        ASTExprNode result = getParantheseExpr();
+        while (m_lexer.lookAhead().m_type == Type.TDASH) {
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            ASTExprNode operand = getParantheseExpr();
+            result = new ASTTDashNode(result, operand);
+        }
+        return result;
      }    
      
     ASTExprNode getUnaryExpr() throws Exception {
