@@ -31,7 +31,19 @@ public class ExpressionParser {
     }
     
     ASTExprNode getMulDivExpr() throws Exception {
-       return getUnaryExpr();
+       ASTExprNode operand1 =  getUnaryExpr();
+
+       while(m_lexer.lookAhead().m_type == TokenIntf.Type.MUL || m_lexer.lookAhead().m_type == TokenIntf.Type.DIV) {
+            var operandToken = m_lexer.lookAhead();
+
+            m_lexer.advance();
+
+            ASTExprNode operand2 =  getUnaryExpr();
+
+            operand1 = new ASTMulDivExprNode(operand1, operand2, operandToken.m_type);
+
+       }
+       return operand1;
     }
     
     ASTExprNode getPlusMinusExpr() throws Exception {
