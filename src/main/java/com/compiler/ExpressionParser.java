@@ -59,6 +59,27 @@ public class ExpressionParser {
         return result;
     }
 
+    ASTPlusMinusExprRecursiveNode getPlusMinusExprRecursive() throws Exception {
+        // plusMinusExprRecursive: (PLUS|MINUS) mulDivExpr plusMinusExprRecursive
+        // plusMinusExprRecursive: eps
+        if (m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS || m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS) {
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance(); // PLUS|MINUS
+            ASTExprNode operand0 = getMulDivExpr();
+            ASTPlusMinusExprRecursiveNode operand1 = getPlusMinusExprRecursive();
+            return new ASTPlusMinusExprRecursiveNode(curToken.m_type, operand0, operand1);
+        } else {
+            return null;
+        }
+    }
+
+    ASTExprNode getPlusMinusExprWithRecursion() throws Exception {
+        // plusMinusExpr: mulDivExpr plusMinusExprRecursive
+        ASTExprNode operand0 = getMulDivExpr();
+        ASTPlusMinusExprRecursiveNode operand1 = getPlusMinusExprRecursive();
+        return new ASTPlusMinusExprWithRecursionNode(operand0, operand1);
+    }
+
     ASTExprNode getBitAndOrExpr() throws Exception {
         // bitExpr: plusMinusExpr ((AND|OR) bitExpr)*
         // ACHTUNG: & hat höhere Priorität, daher haben wir zwei einzelne Funktionen erstellt.
