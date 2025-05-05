@@ -5,19 +5,19 @@ import com.compiler.TokenIntf.Type;
 public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     private Lexer m_lexer;
 
-    public ExpressionEvaluator(final Lexer lexer) {
+    public ExpressionEvaluator(Lexer lexer) {
         m_lexer = lexer;
     }
 
     @Override
-    public int eval(final String val) throws Exception {
+    public int eval(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
     }
 
     int getParantheseExpr() throws Exception {
         // LPAREN questionMarkExpr RPAREN | INTEGER
-        final Token curToken = m_lexer.lookAhead();
+        Token curToken = m_lexer.lookAhead();
         if (curToken.m_type == TokenIntf.Type.INTEGER) {
             m_lexer.advance(); // INTEGER
             return Integer.valueOf(curToken.m_value);    
@@ -93,9 +93,9 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
                 m_lexer.lookAhead().m_type == TokenIntf.Type.PLUS ||
                         m_lexer.lookAhead().m_type == TokenIntf.Type.MINUS
         ) {
-            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+            TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
             m_lexer.advance(); // getSumOp()
-            final int op = getMulDivExpr();
+            int op = getMulDivExpr();
             if (tokenType == TokenIntf.Type.PLUS) {
                 result += op;
             } else {
@@ -106,19 +106,29 @@ public class ExpressionEvaluator implements ExpressionEvaluatorIntf {
     }
 
     int getBitAndOrExpr() throws Exception {
+        return getBitOr();
+    }
+
+    int getBitAnd() throws Exception {
+        // bitAndExpr: plusMinusExpr (BITAND bitAndExpr)*
+        // ACHTUNG: & hat höhere Priorität, daher haben wir zwei einzelne Funktionen erstellt.
+        // Das sich für die anderen nichts ändert, geben wir hier einfach das bitOr zurück!
         int result = getPlusMinusExpr();
-        while (
-                m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND ||
-                        m_lexer.lookAhead().m_type == TokenIntf.Type.BITOR
-        ) {
-            final TokenIntf.Type tokenType = m_lexer.lookAhead().m_type;
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.BITAND) {
             m_lexer.advance();
-            final int op = getPlusMinusExpr();
-            if (tokenType == TokenIntf.Type.BITAND) {
-                result &= op;
-            } else {
-                result |= op;
-            }
+            int op = getPlusMinusExpr();
+            result &= op;
+        }
+        return result;
+    }
+
+    int getBitOr() throws Exception {
+        // bitOrExpr: bitAndExpr (BITOR bitOrExpr)*
+        int result = getBitAnd();
+        while (m_lexer.lookAhead().m_type == Type.BITOR) {
+            m_lexer.advance();
+            int op = getBitAnd();
+            result |= op;
         }
         return result;
     }
