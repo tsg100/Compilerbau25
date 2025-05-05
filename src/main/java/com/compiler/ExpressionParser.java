@@ -161,7 +161,7 @@ public class ExpressionParser {
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
-        ASTExprNode predicate = getCompareExpr();
+        ASTExprNode predicate = getAndOrExpr();
 
         if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
             m_lexer.advance();
