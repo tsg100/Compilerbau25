@@ -161,7 +161,17 @@ public class ExpressionParser {
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
-        return getAndOrExpr();
+        ASTExprNode predicate = getAndOrExpr();
+
+        if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
+            m_lexer.advance();
+            ASTExprNode operand1 = getQuestionMarkExpr();
+            m_lexer.expect(TokenIntf.Type.DOUBLECOLON);
+            ASTExprNode operand2 = getQuestionMarkExpr();
+            return new ASTQuestionMarkNode(predicate, operand1, operand2);
+        }else{
+            return predicate;
+        }
     }
 
 }
