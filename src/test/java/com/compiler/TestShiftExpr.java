@@ -10,8 +10,8 @@ public class TestShiftExpr extends TestExpressionEvaluatorBase {
 	public void testShiftRight() throws Exception {
 		assertEquals(5 >> 2, evalExpression("5 >> 2"));
 	}
+	
 	@Test
-
 	public void testShiftLeft() throws Exception {
 		assertEquals(5 << 2, evalExpression("5 << 2"));
 	}
