@@ -157,7 +157,19 @@ public class ExpressionParser {
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        return getShiftExpr();
+        ASTExprNode result = getShiftExpr();
+        while (
+                m_lexer.lookAhead().m_type == Type.EQUAL ||
+                m_lexer.lookAhead().m_type == Type.GREATER ||
+                m_lexer.lookAhead().m_type == Type.LESS
+        ){
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            ASTExprNode operand = getShiftExpr();
+            result = new ASTCompareExprNode(result, operand, curToken.m_type);
+        }
+
+        return result;
     }
 
     ASTExprNode getAndExpr() throws Exception {
