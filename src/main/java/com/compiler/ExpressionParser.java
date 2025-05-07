@@ -38,7 +38,19 @@ public class ExpressionParser {
      }    
      
     ASTExprNode getUnaryExpr() throws Exception {
-       return getDashExpr();
+        switch (m_lexer.lookAhead().m_type) {
+            case MINUS -> {
+                m_lexer.advance();
+                return new ASTUnaryExprNode(getUnaryExpr(), TokenIntf.Type.MINUS);
+            }
+            case NOT -> {
+                m_lexer.advance();
+                return new ASTUnaryExprNode(getUnaryExpr(), TokenIntf.Type.NOT);
+            }
+            default -> {
+                return getDashExpr();
+            }
+        }
     }
     
     ASTExprNode getMulDivExpr() throws Exception {
