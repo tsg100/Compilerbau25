@@ -126,7 +126,15 @@ public class ExpressionParser {
 
 
     ASTExprNode getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+        ASTExprNode result = getBitAndOrExpr();
+        
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT || m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT) {
+        	Token curToken = m_lexer.lookAhead();
+            m_lexer.advance(); // PLUS|MINUS
+            ASTExprNode operand = getBitAndOrExpr();
+            result = new ASTShiftExprNode(result, operand, curToken.m_type);
+		}
+        return result;
     }
 
     ASTExprNode getCompareExpr() throws Exception {
