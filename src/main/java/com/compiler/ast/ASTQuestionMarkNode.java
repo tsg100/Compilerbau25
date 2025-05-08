@@ -17,5 +17,12 @@ public class ASTQuestionMarkNode extends ASTExprNode {
         return (m_predicate.eval() != 0) ? m_operand0.eval() : m_operand1.eval();
     }
 
-    public void print(OutputStreamWriter outStream, String indent) throws Exception {}
+    public void print(OutputStreamWriter outStream, String indent) throws Exception {
+        outStream.write(indent);
+        outStream.write("QuestionMarkExpr ");
+        outStream.write("\n");
+        m_predicate.print(outStream, indent + "  ");
+        m_operand0.print(outStream, indent + "  ");
+        m_operand1.print(outStream, indent + "  ");
+    }
 }
