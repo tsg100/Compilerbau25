@@ -23,10 +23,21 @@ public class ExpressionParser {
 
     ASTExprNode getParantheseExpr() throws Exception {
         // parentheseExpr : INTEGER
+        // parentheseExpr : LPAREN questionMarkExpr RPAREN
         Token curToken = m_lexer.lookAhead();
-        m_lexer.expect(TokenIntf.Type.INTEGER);
-        ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
-        return result;
+        if (curToken.m_type == TokenIntf.Type.INTEGER) {
+            m_lexer.advance(); // INTEGER
+            ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+            return result;
+        } else if (curToken.m_type == TokenIntf.Type.LPAREN) {
+            m_lexer.advance(); // LPAREN
+            ASTExprNode result = getQuestionMarkExpr();
+            m_lexer.expect(TokenIntf.Type.RPAREN);
+            return result;
+        } else {
+            m_lexer.throwCompilerException("unexpected symbol", "INTEGER or LPAREN");
+            return null;
+        }
     }
 
     ASTExprNode getVariableExpr() throws Exception {
@@ -42,7 +53,14 @@ public class ExpressionParser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        return getParantheseExpr();
+        ASTExprNode result = getParantheseExpr();
+        while (m_lexer.lookAhead().m_type == Type.TDASH) {
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            ASTExprNode operand = getParantheseExpr();
+            result = new ASTTDashNode(result, operand);
+        }
+        return result;
     }
 
     ASTExprNode getUnaryExpr() throws Exception {
@@ -146,11 +164,31 @@ public class ExpressionParser {
 
 
     ASTExprNode getShiftExpr() throws Exception {
-        return getBitAndOrExpr();
+        ASTExprNode result = getBitAndOrExpr();
+
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT || m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT) {
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance(); // PLUS|MINUS
+            ASTExprNode operand = getBitAndOrExpr();
+            result = new ASTShiftExprNode(result, operand, curToken.m_type);
+        }
+        return result;
     }
 
     ASTExprNode getCompareExpr() throws Exception {
-        return getShiftExpr();
+        ASTExprNode result = getShiftExpr();
+        while (
+                m_lexer.lookAhead().m_type == Type.EQUAL ||
+                        m_lexer.lookAhead().m_type == Type.GREATER ||
+                        m_lexer.lookAhead().m_type == Type.LESS
+        ){
+            Token curToken = m_lexer.lookAhead();
+            m_lexer.advance();
+            ASTExprNode operand = getShiftExpr();
+            result = new ASTCompareExprNode(result, operand, curToken.m_type);
+        }
+
+        return result;
     }
 
     ASTExprNode getAndExpr() throws Exception {
