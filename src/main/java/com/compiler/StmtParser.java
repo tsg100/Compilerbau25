@@ -39,6 +39,25 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseDeclareStmt() throws Exception {
-        return null;
+
+        // Consume declare
+        m_lexer.expect(TokenIntf.Type.DECLARE);
+
+
+        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
+            throw new Exception("Expected token of type Identifier");
+        }
+
+        String identifier = m_lexer.m_currentToken.m_value;
+
+        if(m_symbolTable.getSymbol(identifier) != null ){
+            throw new Exception("Variable was already declared: "+ identifier);
+        }
+        
+        m_symbolTable.createSymbol(identifier);
+
+
+        return new ASTDeclareStmtNode(identifier);
+
     }
 }
