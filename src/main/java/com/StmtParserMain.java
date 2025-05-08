@@ -9,15 +9,14 @@ public class StmtParserMain {
         String program = """
         {
           DECLARE a;
-          DECLARE b;
-          a = 1 + 2;
-          b = 5;
-          PRINT a ? b + 1 : -1;
+          a = 1;
+          PRINT a;
         }
         """;
         com.compiler.ast.ASTStmtNode rootNode = parser.parseProgram(program);
         OutputStreamWriter outputWriter = new OutputStreamWriter(System.out);
-        // rootNode.execute(outputWriter);
+        rootNode.execute(outputWriter);
+        outputWriter.flush();
     }
 
 }
