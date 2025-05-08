@@ -20,5 +20,12 @@ public class ASTBitOrExprNode extends ASTExprNode {
        return operand0 | operand1;
     }
 
-    public void print(final OutputStreamWriter outStream, final String indent) throws Exception {}
+    public void print(final OutputStreamWriter outStream, final String indent) throws Exception {
+        outStream.write(indent);
+        outStream.write("BitOrExpression ");
+        outStream.write(m_operator.toString());
+        outStream.write("\n");
+        m_operand0.print(outStream, indent + "  ");
+        m_operand1.print(outStream, indent + "  ");
+    }
 }
