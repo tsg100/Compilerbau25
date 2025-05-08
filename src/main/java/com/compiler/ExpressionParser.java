@@ -23,10 +23,21 @@ public class ExpressionParser {
 
     ASTExprNode getParantheseExpr() throws Exception {
         // parentheseExpr : INTEGER
+        // parentheseExpr : LPAREN questionMarkExpr RPAREN
         Token curToken = m_lexer.lookAhead();
-        m_lexer.expect(TokenIntf.Type.INTEGER);
-        ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
-        return result;
+        if (curToken.m_type == TokenIntf.Type.INTEGER) {
+          m_lexer.advance(); // INTEGER
+          ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+          return result;
+        } else if (curToken.m_type == TokenIntf.Type.LPAREN) {
+            m_lexer.advance(); // LPAREN
+            ASTExprNode result = getQuestionMarkExpr();
+            m_lexer.expect(TokenIntf.Type.RPAREN);
+            return result;
+        } else {
+            m_lexer.throwCompilerException("unexpected symbol", "INTEGER or LPAREN");
+            return null;
+        }
     }
 
     ASTExprNode getVariableExpr() throws Exception {
