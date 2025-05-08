@@ -1,5 +1,6 @@
 package com.compiler.ast;
 
+
 import java.io.OutputStreamWriter;
 
 public class ASTPrintStmtNode extends ASTStmtNode{
@@ -23,5 +24,6 @@ public class ASTPrintStmtNode extends ASTStmtNode{
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
+
     }
 }
