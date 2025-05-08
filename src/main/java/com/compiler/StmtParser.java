@@ -35,6 +35,19 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseAssignStmt() throws Exception {
+    	
+    	m_lexer.expect(TokenIntf.Type.IDENT);        
+    	String identifier = m_lexer.m_currentToken.m_value;
+    	Symbol ident = m_symbolTable.getSymbol(identifier);
+    	if (ident != null) {
+    		m_lexer.advance(); // ASSIGN
+    		ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+    		return new ASTAssignStmtNode(ident, expr);
+		}
+    	else {
+			m_lexer.throwCompilerException(String.format("%s not declared" , identifier), "");
+		}
+    	
         return null;
     }
 
