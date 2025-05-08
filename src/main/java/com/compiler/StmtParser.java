@@ -68,6 +68,8 @@ public class StmtParser {
         }
         
         m_symbolTable.createSymbol(identifier);
+        
+        m_lexer.advance();
 
 
         return new ASTDeclareStmtNode(identifier);
