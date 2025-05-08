@@ -9,8 +9,12 @@ public class StmtParserMain {
         String program = """
         {
           DECLARE a;
-          a = 1;
-          PRINT a;
+          DECLARE b;
+          a = 1 + 2;
+          b = 5;
+          PRINT a ? b + 1 : -1;
+          PRINT 1 + 2;
+          PRINT 3 + 4;
         }
         """;
         com.compiler.ast.ASTStmtNode rootNode = parser.parseProgram(program);

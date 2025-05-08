@@ -14,7 +14,7 @@ public class StmtParser {
     public StmtParser(Lexer lexer) {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
-        m_exprParser = new ExpressionParser(lexer);
+        m_exprParser = new ExpressionParser(lexer, m_symbolTable);
     }
 
     public ASTStmtNode parseProgram(String program) throws Exception {
