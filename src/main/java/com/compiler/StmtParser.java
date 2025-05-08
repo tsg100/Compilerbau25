@@ -60,16 +60,51 @@ public class StmtParser {
 
     public ASTStmtNode parsePrintStmt() throws Exception {
         m_lexer.expect(Type.PRINT);
+
         ASTPrintStmtNode astPrintStmtNode = new ASTPrintStmtNode(m_exprParser.getQuestionMarkExpr());
         m_lexer.expect(Type.SEMICOLON);
         return astPrintStmtNode;
     }
 
     public ASTStmtNode parseAssignStmt() throws Exception {
+    	
+    	m_lexer.expect(TokenIntf.Type.IDENT);        
+    	String identifier = m_lexer.m_currentToken.m_value;
+    	Symbol ident = m_symbolTable.getSymbol(identifier);
+    	if (ident != null) {
+    		m_lexer.advance(); // ASSIGN
+    		ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+    		return new ASTAssignStmtNode(ident, expr);
+		}
+    	else {
+			m_lexer.throwCompilerException(String.format("%s not declared" , identifier), "");
+		}
+    	
         return null;
     }
 
     public ASTStmtNode parseDeclareStmt() throws Exception {
-        return null;
+
+        // Consume declare
+        m_lexer.expect(TokenIntf.Type.DECLARE);
+
+
+        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
+            throw new Exception("Expected token of type Identifier");
+        }
+
+        String identifier = m_lexer.m_currentToken.m_value;
+
+        if(m_symbolTable.getSymbol(identifier) != null ){
+            throw new Exception("Variable was already declared: "+ identifier);
+        }
+        
+        m_symbolTable.createSymbol(identifier);
+        
+        m_lexer.advance();
+
+
+        return new ASTDeclareStmtNode(identifier);
+
     }
 }

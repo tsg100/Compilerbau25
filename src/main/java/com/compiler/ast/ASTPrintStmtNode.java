@@ -1,27 +1,29 @@
 package com.compiler.ast;
 
-import java.io.IOException;
+
 import java.io.OutputStreamWriter;
 
-import com.compiler.TokenIntf;
+public class ASTPrintStmtNode extends ASTStmtNode{
 
-public class ASTPrintStmtNode extends ASTStmtNode {
-    ASTExprNode m_expr;
-    TokenIntf.Type m_operator = TokenIntf.Type.PRINT;
+    private final ASTExprNode astExprNode;
 
-    public ASTPrintStmtNode(ASTExprNode expr) {
-        m_expr = expr;
-    }
-
-    public void print(OutputStreamWriter outStream, String indent) throws Exception {
+    public ASTPrintStmtNode(ASTExprNode astExprNode) {
+        this.astExprNode = astExprNode;
     }
 
     @Override
     public void execute(OutputStreamWriter out) {
-        int expr = m_expr.eval();
-        System.out.println(expr);
+        String result = Integer.toString(astExprNode.eval());
         try {
-            out.write(expr);
-        } catch (IOException ignore) {}
+            print(out, result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void print(OutputStreamWriter outStream, String indent) throws Exception {
+        outStream.write(indent);
+
     }
 }

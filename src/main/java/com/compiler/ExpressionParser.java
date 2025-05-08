@@ -10,12 +10,12 @@ public class ExpressionParser {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
     }
-    
+
     public ExpressionParser(Lexer lexer, SymbolTableIntf symbolTable) {
         m_lexer = lexer;
         m_symbolTable = symbolTable;
     }
-    
+
     public ASTExprNode parseExpression(String val) throws Exception {
         m_lexer.init(val);
         return getQuestionMarkExpr();
@@ -26,9 +26,9 @@ public class ExpressionParser {
         // parentheseExpr : LPAREN questionMarkExpr RPAREN
         Token curToken = m_lexer.lookAhead();
         if (curToken.m_type == TokenIntf.Type.INTEGER) {
-          m_lexer.advance(); // INTEGER
-          ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
-          return result;
+            m_lexer.advance(); // INTEGER
+            ASTExprNode result = new ASTIntegerLiteralNode(curToken.m_value);
+            return result;
         } else if (curToken.m_type == TokenIntf.Type.LPAREN) {
             m_lexer.advance(); // LPAREN
             ASTExprNode result = getQuestionMarkExpr();
@@ -41,7 +41,15 @@ public class ExpressionParser {
     }
 
     ASTExprNode getVariableExpr() throws Exception {
-        return null;
+        Token curToken = m_lexer.lookAhead();
+        if (curToken.m_type == Type.IDENT) {
+            m_lexer.advance();
+            Symbol symbol = m_symbolTable.getSymbol(curToken.m_value);
+            if (symbol == null)
+                throw new CompilerException("Variable not declared: " + curToken.m_value, curToken.m_firstLine, "<line>", "a declared variable");
+            return new ASTVariableExprNode(symbol);
+        }
+        throw new CompilerException("Expected an variable Identifier: " + curToken.m_value, curToken.m_firstLine, "<line>", "a Variable Identifier");
     }
 
     ASTExprNode getDashExpr() throws Exception {
@@ -53,8 +61,8 @@ public class ExpressionParser {
             result = new ASTTDashNode(result, operand);
         }
         return result;
-     }    
-     
+    }
+
     ASTExprNode getUnaryExpr() throws Exception {
         switch (m_lexer.lookAhead().m_type) {
             case MINUS -> {
@@ -70,23 +78,23 @@ public class ExpressionParser {
             }
         }
     }
-    
-    ASTExprNode getMulDivExpr() throws Exception {
-       ASTExprNode operand1 =  getUnaryExpr();
 
-       while(m_lexer.lookAhead().m_type == TokenIntf.Type.MUL || m_lexer.lookAhead().m_type == TokenIntf.Type.DIV) {
+    ASTExprNode getMulDivExpr() throws Exception {
+        ASTExprNode operand1 = getUnaryExpr();
+
+        while (m_lexer.lookAhead().m_type == TokenIntf.Type.MUL || m_lexer.lookAhead().m_type == TokenIntf.Type.DIV) {
             var operandToken = m_lexer.lookAhead();
 
             m_lexer.advance();
 
-            ASTExprNode operand2 =  getUnaryExpr();
+            ASTExprNode operand2 = getUnaryExpr();
 
             operand1 = new ASTMulDivExprNode(operand1, operand2, operandToken.m_type);
 
-       }
-       return operand1;
+        }
+        return operand1;
     }
-    
+
     ASTExprNode getPlusMinusExpr() throws Exception {
         // plusMinusExpr: mulDivExpr ((PLUS|MINUS) mulDivExpr)*
         ASTExprNode result = getMulDivExpr();
@@ -132,7 +140,7 @@ public class ExpressionParser {
     ASTExprNode getBitAndExpr() throws Exception {
         ASTExprNode result = getPlusMinusExpr();
 
-        while(m_lexer.lookAhead().m_type == Type.BITAND) {
+        while (m_lexer.lookAhead().m_type == Type.BITAND) {
             Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
             ASTExprNode operand = getPlusMinusExpr();
@@ -145,7 +153,7 @@ public class ExpressionParser {
     ASTExprNode getBitOrExpr() throws Exception {
         ASTExprNode result = getBitAndExpr();
 
-        while(m_lexer.lookAhead().m_type == Type.BITOR) {
+        while (m_lexer.lookAhead().m_type == Type.BITOR) {
             Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
             ASTExprNode operand = getBitAndExpr();
@@ -157,13 +165,13 @@ public class ExpressionParser {
 
     ASTExprNode getShiftExpr() throws Exception {
         ASTExprNode result = getBitAndOrExpr();
-        
+
         while (m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTLEFT || m_lexer.lookAhead().m_type == TokenIntf.Type.SHIFTRIGHT) {
-        	Token curToken = m_lexer.lookAhead();
+            Token curToken = m_lexer.lookAhead();
             m_lexer.advance(); // PLUS|MINUS
             ASTExprNode operand = getBitAndOrExpr();
             result = new ASTShiftExprNode(result, operand, curToken.m_type);
-		}
+        }
         return result;
     }
 
@@ -171,8 +179,8 @@ public class ExpressionParser {
         ASTExprNode result = getShiftExpr();
         while (
                 m_lexer.lookAhead().m_type == Type.EQUAL ||
-                m_lexer.lookAhead().m_type == Type.GREATER ||
-                m_lexer.lookAhead().m_type == Type.LESS
+                        m_lexer.lookAhead().m_type == Type.GREATER ||
+                        m_lexer.lookAhead().m_type == Type.LESS
         ){
             Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
@@ -213,13 +221,13 @@ public class ExpressionParser {
     ASTExprNode getQuestionMarkExpr() throws Exception {
         ASTExprNode predicate = getAndOrExpr();
 
-        if(m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
+        if (m_lexer.lookAhead().m_type == TokenIntf.Type.QUESTIONMARK) {
             m_lexer.advance();
             ASTExprNode operand1 = getQuestionMarkExpr();
             m_lexer.expect(TokenIntf.Type.DOUBLECOLON);
             ASTExprNode operand2 = getQuestionMarkExpr();
             return new ASTQuestionMarkNode(predicate, operand1, operand2);
-        }else{
+        } else {
             return predicate;
         }
     }
