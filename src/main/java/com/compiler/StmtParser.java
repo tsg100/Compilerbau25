@@ -31,7 +31,10 @@ public class StmtParser {
     }
 
     public ASTStmtNode parsePrintStmt() throws Exception {
-        return null;
+        m_lexer.expect(Type.PRINT);
+        ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTPrintStmtNode(expr);
     }
 
     public ASTStmtNode parseAssignStmt() throws Exception {
