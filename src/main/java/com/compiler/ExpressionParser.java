@@ -34,6 +34,8 @@ public class ExpressionParser {
             ASTExprNode result = getQuestionMarkExpr();
             m_lexer.expect(TokenIntf.Type.RPAREN);
             return result;
+        } else if (curToken.m_type == TokenIntf.Type.IDENT) {
+            return getVariableExpr();
         } else {
             m_lexer.throwCompilerException("unexpected symbol", "INTEGER or LPAREN");
             return null;
