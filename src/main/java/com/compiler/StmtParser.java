@@ -2,8 +2,6 @@ package com.compiler;
 import com.compiler.TokenIntf.Type;
 import com.compiler.ast.*;
 
-import java.beans.Expression;
-
 public class StmtParser {
     private Lexer m_lexer;
     private ExpressionParser m_exprParser;
