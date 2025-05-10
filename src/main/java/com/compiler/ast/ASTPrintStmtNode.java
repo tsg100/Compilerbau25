@@ -15,7 +15,7 @@ public class ASTPrintStmtNode extends ASTStmtNode{
     public void execute(OutputStreamWriter out) {
         String result = Integer.toString(astExprNode.eval());
         try {
-            print(out, result);
+            print(out, result + '\n');
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

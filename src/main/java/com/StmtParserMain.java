@@ -13,11 +13,14 @@ public class StmtParserMain {
           a = 1 + 2;
           b = 5;
           PRINT a ? b + 1 : -1;
+          PRINT 1 + 2;
+          PRINT 3 + 4;
         }
         """;
         com.compiler.ast.ASTStmtNode rootNode = parser.parseProgram(program);
         OutputStreamWriter outputWriter = new OutputStreamWriter(System.out);
-        // rootNode.execute(outputWriter);
+        rootNode.execute(outputWriter);
+        outputWriter.flush();
     }
 
 }

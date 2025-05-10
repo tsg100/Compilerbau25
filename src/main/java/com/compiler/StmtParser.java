@@ -14,7 +14,7 @@ public class StmtParser {
     public StmtParser(Lexer lexer) {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
-        m_exprParser = new ExpressionParser(lexer);
+        m_exprParser = new ExpressionParser(lexer, m_symbolTable);
     }
 
     public ASTStmtNode parseProgram(String program) throws Exception {
@@ -68,12 +68,13 @@ public class StmtParser {
 
     public ASTStmtNode parseAssignStmt() throws Exception {
     	
-    	m_lexer.expect(TokenIntf.Type.IDENT);        
     	String identifier = m_lexer.m_currentToken.m_value;
+    	m_lexer.expect(TokenIntf.Type.IDENT);        
     	Symbol ident = m_symbolTable.getSymbol(identifier);
     	if (ident != null) {
     		m_lexer.advance(); // ASSIGN
     		ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+            m_lexer.expect(TokenIntf.Type.SEMICOLON);
     		return new ASTAssignStmtNode(ident, expr);
 		}
     	else {
@@ -101,7 +102,9 @@ public class StmtParser {
         
         m_symbolTable.createSymbol(identifier);
         
-        m_lexer.advance();
+        m_lexer.advance(); // IDENT
+
+        m_lexer.expect(TokenIntf.Type.SEMICOLON);
 
 
         return new ASTDeclareStmtNode(identifier);
