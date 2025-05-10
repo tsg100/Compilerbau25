@@ -21,6 +21,14 @@ public class ASTStmtListNode extends ASTStmtNode {
 
     @Override
     public void print(final OutputStreamWriter outStream, final String indent) throws Exception {
-        
+        outStream.write("StatementList\n");
+        this.stmts.forEach(stmt -> {
+            try {
+                stmt.print(outStream, indent + "  ");
+                outStream.write("\n");
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }
