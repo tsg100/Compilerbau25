@@ -10,10 +10,19 @@ public class StmtParser {
     private Lexer m_lexer;
     private ExpressionParser m_exprParser;
     private SymbolTable m_symbolTable;
+    private FunctionTable m_functionTable;
 
     public StmtParser(Lexer lexer) {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
+        m_exprParser = new ExpressionParser(lexer, m_symbolTable);
+        m_functionTable = null;
+    }
+
+    public StmtParser(Lexer lexer, SymbolTable symbolTable, FunctionTable functionTable) {
+        m_lexer = lexer;
+        m_symbolTable = symbolTable;
+        m_functionTable = functionTable;
         m_exprParser = new ExpressionParser(lexer, m_symbolTable);
     }
 
