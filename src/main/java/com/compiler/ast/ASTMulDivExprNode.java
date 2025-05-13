@@ -30,7 +30,7 @@ public class ASTMulDivExprNode extends ASTExprNode {
 
         m_operand0.print(outStream, indent);
 
-        outStream.write(" " + getStringReprOfOperator(m_operator) + " ");
+        outStream.write(indent + getStringReprOfOperator(m_operator) + " ");
 
         m_operand1.print(outStream, indent);
 
