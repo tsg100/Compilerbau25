@@ -1,6 +1,7 @@
 package com.compiler.ast;
 
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 public class ASTPrintStmtNode extends ASTStmtNode{
@@ -15,8 +16,8 @@ public class ASTPrintStmtNode extends ASTStmtNode{
     public void execute(OutputStreamWriter out) {
         String result = Integer.toString(astExprNode.eval());
         try {
-            print(out, result + '\n');
-        } catch (Exception e) {
+            out.write(result + "\n");
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -24,6 +25,8 @@ public class ASTPrintStmtNode extends ASTStmtNode{
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
-
+        outStream.write("ASTPrintStmtNode ");
+        outStream.write("\n");
+        astExprNode.print(outStream, indent + "  ");
     }
 }
