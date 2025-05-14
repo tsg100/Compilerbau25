@@ -23,8 +23,6 @@ public class ASTPrintStmtNode extends ASTStmtNode{
 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
-        outStream.write(indent);
-        outStream.write("PrintStmtNode ");
-        outStream.write("\n");
+        
     }
 }
