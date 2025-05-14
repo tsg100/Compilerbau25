@@ -29,5 +29,12 @@ public class ASTCompareExprNode extends ASTExprNode{
         };
     }
 
-    public void print(OutputStreamWriter outStream, String indent) throws Exception {}
+    public void print(OutputStreamWriter outStream, String indent) throws Exception {
+        outStream.write(indent);
+        outStream.write("CompareExpr ");
+        outStream.write(m_operator.toString());
+        outStream.write("\n");
+        m_operand0.print(outStream, indent + "  ");
+        m_operand1.print(outStream, indent + "  ");
+    }
 }
