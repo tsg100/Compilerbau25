@@ -2,18 +2,17 @@ package com.compiler;
 
 import org.junit.Test;
 
-public class InterpreterTestPlusMinus extends InterpreterTestBase
+public class InterpreterTestTDash extends StmtParserTestBase
 {
     @Test
     public void testInterpreter() throws Exception
     {
         String program = """
         {
-          PRINT 1 + 2;
-          PRINT 4 + 5 + 6;
+          PRINT 2 ^ 1;
         }
                 """;
-        testInterpreter(program, "3\n15\n");
+        testParser(program, "2\n");
     }
 
 }
