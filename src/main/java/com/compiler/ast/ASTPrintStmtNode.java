@@ -29,4 +29,11 @@ public class ASTPrintStmtNode extends ASTStmtNode{
         outStream.write("\n");
         astExprNode.print(outStream, indent + "  ");
     }
+
+    @Override
+    public void codegen(com.compiler.CompileEnvIntf env) {
+        com.compiler.InstrIntf expr = this.astExprNode.codegen(env);
+        com.compiler.InstrIntf printInstr = new com.compiler.instr.InstrPrint(expr);
+        env.addInstr(printInstr); 
+    }  
 }

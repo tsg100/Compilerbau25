@@ -31,4 +31,10 @@ public class ASTStmtListNode extends ASTStmtNode {
             }
         });
     }
+
+    @Override
+    public void codegen(com.compiler.CompileEnvIntf env) {
+        this.stmts.forEach(stmt -> stmt.codegen(env));
+    }
+
 }

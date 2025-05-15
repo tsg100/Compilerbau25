@@ -21,4 +21,11 @@ public class ASTIntegerLiteralNode extends ASTExprNode {
     public int eval() {
         return Integer.valueOf(m_value);
     }
+
+    @Override
+    public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf compileEnv) {
+        com.compiler.InstrIntf literalInstr = new com.compiler.instr.InstrIntegerLiteral(m_value);
+        compileEnv.addInstr(literalInstr);
+        return literalInstr;
+    }
 }

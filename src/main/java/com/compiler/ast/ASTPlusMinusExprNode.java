@@ -23,6 +23,14 @@ public class ASTPlusMinusExprNode extends ASTExprNode {
        }
     }
 
+    public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf compileEnv) {
+        com.compiler.InstrIntf operand0 = m_operand0.codegen(compileEnv);
+        com.compiler.InstrIntf operand1 = m_operand1.codegen(compileEnv);
+        com.compiler.InstrIntf plusMinusInstr = new com.compiler.instr.InstrPlusMinus(m_operator, operand0, operand1);
+        compileEnv.addInstr(plusMinusInstr);
+        return plusMinusInstr;
+    }
+ 
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
         outStream.write("PlusMinusExpr ");
