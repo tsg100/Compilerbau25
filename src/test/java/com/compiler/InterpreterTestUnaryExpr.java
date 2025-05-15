@@ -2,7 +2,7 @@ package com.compiler;
 
 import org.junit.Test;
 
-public class InterpreterTestUnaryExpr extends  StmtParserTestBase {
+public class InterpreterTestUnaryExpr extends  InterpreterTestBase {
     @Test
     public void testMinusOne() throws Exception
     {
@@ -11,7 +11,7 @@ public class InterpreterTestUnaryExpr extends  StmtParserTestBase {
           PRINT -1;
         }
         """;
-        testParser(program, "-1\n");
+        testInterpreter(program, "-1\n");
     }
 
     @Test
@@ -22,7 +22,7 @@ public class InterpreterTestUnaryExpr extends  StmtParserTestBase {
           PRINT !1;
         }
         """;
-        testParser(program, "0\n");
+        testInterpreter(program, "0\n");
     }
 
     @Test
@@ -33,7 +33,7 @@ public class InterpreterTestUnaryExpr extends  StmtParserTestBase {
           PRINT -0;
         }
         """;
-        testParser(program, "0\n");
+        testInterpreter(program, "0\n");
     }
 
     @Test
@@ -44,7 +44,7 @@ public class InterpreterTestUnaryExpr extends  StmtParserTestBase {
           PRINT !0;
         }
         """;
-        testParser(program, "1\n");
+        testInterpreter(program, "1\n");
     }
 
 }
