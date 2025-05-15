@@ -24,6 +24,13 @@ public class ASTAssignStmtNode extends ASTStmtNode{
 	}
 
 	@Override
+	public void codegen(com.compiler.CompileEnvIntf env) {
+		com.compiler.InstrIntf exprInstr = expr.codegen(env);
+		com.compiler.InstrIntf assignInstr = new com.compiler.instr.InstrAssign(identifier, exprInstr);
+		env.addInstr(assignInstr);
+	}
+
+	@Override
 	public void print(OutputStreamWriter outStream, String indent) throws Exception {}
 
 }

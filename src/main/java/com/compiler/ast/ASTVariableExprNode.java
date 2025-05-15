@@ -17,5 +17,14 @@ public class ASTVariableExprNode extends ASTExprNode {
     }
 
     @Override
+	public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf env) {
+	// create instruction object
+    com.compiler.InstrIntf variableInstr = new com.compiler.instr.InstrVariableExpr(m_symbol);
+	// add instruction to current code block
+    env.addInstr(variableInstr);
+    return variableInstr;	
+    }
+
+    @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception { }
 }
