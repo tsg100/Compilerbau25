@@ -2,6 +2,10 @@ package com.compiler.ast;
 
 import java.io.OutputStreamWriter;
 
+import com.compiler.CompileEnvIntf;
+import com.compiler.InstrIntf;
+import com.compiler.instr.InstrShift;
+
 public class ASTShiftExprNode extends ASTExprNode{
 	
 	ASTExprNode m_operand0;
@@ -22,6 +26,14 @@ public class ASTShiftExprNode extends ASTExprNode{
        } else {
     	  return operand0 >> operand1;
        }
+    }
+    
+    public InstrIntf codegen(CompileEnvIntf compileEnv) {
+        InstrIntf operand0 = m_operand0.codegen(compileEnv);
+        InstrIntf operand1 = m_operand1.codegen(compileEnv);
+        InstrIntf shiftInstr = new InstrShift(m_operator, operand0, operand1);
+        compileEnv.addInstr(shiftInstr);
+        return shiftInstr;
     }
 
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
