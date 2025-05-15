@@ -2,7 +2,7 @@ package com.compiler;
 
 import org.junit.Test;
 
-public class InterpreterBitAndOrTest extends StmtParserTestBase {
+public class InterpreterBitAndOrTest extends InterpreterTestBase {
 
     @Test
     public void testInterpreter() throws Exception {
@@ -11,7 +11,7 @@ public class InterpreterBitAndOrTest extends StmtParserTestBase {
                   PRINT (1 | 2) & 2;
                 }
                 """;
-        testParser(program, "2\n");
+        testInterpreter(program, "2\n");
     }
 
 
@@ -22,6 +22,6 @@ public class InterpreterBitAndOrTest extends StmtParserTestBase {
                   PRINT 1 | 2 & 2;
                 }
                 """;
-        testParser(program, "3\n");
+        testInterpreter(program, "3\n");
     }
 }
