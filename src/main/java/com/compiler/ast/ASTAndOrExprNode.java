@@ -1,6 +1,9 @@
 package com.compiler.ast;
 
+import com.compiler.CompileEnvIntf;
+import com.compiler.InstrIntf;
 import com.compiler.TokenIntf.Type;
+import com.compiler.instr.InstrAndOr;
 
 import java.io.OutputStreamWriter;
 
@@ -23,6 +26,14 @@ public class ASTAndOrExprNode extends ASTExprNode {
         } else {
             return operand0 == 0 && operand1 == 0 ? 0 : 1;
         }
+    }
+
+    public InstrIntf codegen(CompileEnvIntf compileEnv) {
+        InstrIntf operand0 = m_operand0.codegen(compileEnv);
+        InstrIntf operand1 = m_operand1.codegen(compileEnv);
+        InstrIntf andOrInstr = new InstrAndOr(m_operator, operand0, operand1);
+        compileEnv.addInstr(andOrInstr);
+        return andOrInstr;
     }
 
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
