@@ -44,6 +44,14 @@ public class ASTMulDivExprNode extends ASTExprNode {
         } else {
             throw new Exception("Expected operator type MUL or DIV, got " + operator);
         }
+    }
 
+    public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf compileEnv) {
+        com.compiler.InstrIntf operand0 = m_operand0.codegen(compileEnv);
+        com.compiler.InstrIntf operand1 = m_operand1.codegen(compileEnv);
+
+        com.compiler.InstrIntf mulDivInstr = new com.compiler.instr.InstrMulDiv(m_operator, operand0, operand1);
+        compileEnv.addInstr(mulDivInstr);
+        return mulDivInstr;
     }
 }
