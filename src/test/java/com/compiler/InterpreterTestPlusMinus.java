@@ -2,7 +2,7 @@ package com.compiler;
 
 import org.junit.Test;
 
-public class InterpreterTestPlusMinus extends StmtParserTestBase
+public class InterpreterTestPlusMinus extends InterpreterTestBase
 {
     @Test
     public void testInterpreter() throws Exception
@@ -10,9 +10,10 @@ public class InterpreterTestPlusMinus extends StmtParserTestBase
         String program = """
         {
           PRINT 1 + 2;
+          PRINT 4 + 5 + 6;
         }
                 """;
-        testParser(program, "3\n");
+        testInterpreter(program, "3\n15\n");
     }
 
 }
