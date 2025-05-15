@@ -1,6 +1,10 @@
 package com.compiler.ast;
 
+import com.compiler.CompileEnvIntf;
+import com.compiler.InstrIntf;
+import com.compiler.Token;
 import com.compiler.TokenIntf;
+import com.compiler.instr.InstrBitAnd;
 
 import java.io.OutputStreamWriter;
 
@@ -29,5 +33,15 @@ public class ASTBitAndExprNode extends ASTExprNode {
         outStream.write("\n");
         m_operand0.print(outStream, indent + "  ");
         m_operand1.print(outStream, indent + "  ");
+    }
+
+
+    @Override
+    public InstrIntf codegen(final CompileEnvIntf env) {
+        final InstrIntf operand0 = m_operand0.codegen(env);
+        final InstrIntf operand1 = m_operand1.codegen(env);
+        final InstrIntf bitAnd = new InstrBitAnd(m_operator, operand0, operand1);
+        env.addInstr(bitAnd);
+        return bitAnd;
     }
 }
