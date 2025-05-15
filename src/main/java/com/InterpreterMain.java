@@ -8,7 +8,9 @@ public class InterpreterMain {
         String input = new String("""
           {
             DECLARE a;
-            a = 2;
+            BLOCK {
+              a = 2;
+            }
             PRINT a * 3;
           }
                 """);

@@ -38,11 +38,11 @@ public class StmtParser {
         return result;
     }
 
-    public ASTStmtNode parseStmtlist() throws Exception {
+    public ASTStmtListNode parseStmtlist() throws Exception {
         Token curToken = m_lexer.lookAhead();
         final List<ASTStmtNode> stmtList = new ArrayList<>();
 
-        while (curToken.m_type == Type.DECLARE || curToken.m_type == Type.IDENT || curToken.m_type == Type.PRINT) {
+        while (curToken.m_type != com.compiler.TokenIntf.Type.RBRACE) {
             stmtList.add(parseStmt());
             curToken = m_lexer.lookAhead();
         }
@@ -61,6 +61,9 @@ public class StmtParser {
         }
         if (type == TokenIntf.Type.PRINT) {
             return parsePrintStmt();
+        }
+        if (type == TokenIntf.Type.BLOCK) {
+            return parseJumpBlockStmt();
         }
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
@@ -118,5 +121,17 @@ public class StmtParser {
 
         return new ASTDeclareStmtNode(identifier);
 
+    }
+
+    ASTStmtNode parseJumpBlockStmt() throws Exception {
+        // BLOCK LBRACE stmtList RBRACE
+        m_lexer.expect(Type.BLOCK);
+        m_lexer.expect(Type.LBRACE);
+
+        ASTStmtListNode stmtlistNode = parseStmtlist();
+
+        m_lexer.expect(Type.RBRACE);
+
+        return new ASTJumpBlockNode(stmtlistNode);
     }
 }
