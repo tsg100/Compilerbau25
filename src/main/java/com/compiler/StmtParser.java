@@ -65,9 +65,58 @@ public class StmtParser {
         if (type == TokenIntf.Type.BLOCK) {
             return parseJumpBlockStmt();
         }
+        if (type == Type.FUNCTION) {
+            return parseFunctionStmt();
+        }
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
         return null; // unreachable
+    }
+
+    public ASTStmtNode parseFunctionStmt() throws Exception {
+        m_lexer.expect(Type.FUNCTION);
+        String functionName = m_lexer.m_currentToken.m_value;
+        m_lexer.expect(TokenIntf.Type.IDENT);
+        m_lexer.expect(Type.LPAREN);
+        List<String> parameterList = parseParameterList();
+        m_lexer.expect(TokenIntf.Type.RPAREN);
+
+        m_lexer.expect(TokenIntf.Type.LBRACE);
+        List<ASTStmtNode> functionBody = parseFunctionBody();
+        m_lexer.expect(TokenIntf.Type.RBRACE);
+        m_lexer.expect(Type.SEMICOLON);
+        m_functionTable.createFunction(functionName, parameterList);
+        return new ASTFunctionStmtNode(functionName, parameterList, functionBody);
+    }
+
+    private List<ASTStmtNode> parseFunctionBody() throws Exception {
+        List<ASTStmtNode> stmtList = new ArrayList<>();
+        while(m_lexer.m_currentToken.m_type != Type.RETURN){
+            stmtList.add(parseStmt());
+        }
+        stmtList.add(parseReturnStmt());
+        return stmtList;
+    }
+
+    private ASTStmtNode parseReturnStmt() throws Exception {
+        m_lexer.expect(Type.RETURN);
+        return new ASTReturnStmtNode(m_exprParser.getQuestionMarkExpr());
+    }
+
+    private List<String> parseParameterList() throws Exception {
+        List<String> parameterList = new ArrayList<>();
+        if(m_lexer.m_currentToken.m_type != Type.IDENT){
+            return parameterList;
+        }else {
+            parameterList.add(m_lexer.m_currentToken.m_value);
+            m_lexer.advance();
+
+            while (m_lexer.m_currentToken.m_type == Type.COMMA) {
+                m_lexer.advance();
+                parameterList.add(m_lexer.m_currentToken.m_value);
+            }
+            return parameterList;
+        }
     }
 
     public ASTStmtNode parsePrintStmt() throws Exception {

@@ -7,7 +7,7 @@ public class ExpressionParserMain {
     public static void main(String[] args) throws Exception {
         com.compiler.Lexer lexer = new com.compiler.Lexer();
         com.compiler.ExpressionParser parser = new com.compiler.ExpressionParser(lexer);
-        com.compiler.ast.ASTExprNode expr = parser.parseExpression("30 + 12 - 5");
+        com.compiler.ast.ASTExprNode expr = parser.parseExpression("CALL foo(30) + CALL(12,13) - CALL()");
         int result = expr.eval();
         System.out.println(result);
         OutputStreamWriter out = new OutputStreamWriter(System.out);

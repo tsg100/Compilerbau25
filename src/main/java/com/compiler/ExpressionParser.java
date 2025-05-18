@@ -2,6 +2,9 @@ package com.compiler;
 import com.compiler.TokenIntf.Type;
 import com.compiler.ast.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExpressionParser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
@@ -55,11 +58,11 @@ public class ExpressionParser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        ASTExprNode result = getParantheseExpr();
+        ASTExprNode result = getCallExpr();
         while (m_lexer.lookAhead().m_type == Type.TDASH) {
             Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
-            ASTExprNode operand = getParantheseExpr();
+            ASTExprNode operand = getCallExpr();
             result = new ASTTDashNode(result, operand);
         }
         return result;
@@ -218,6 +221,37 @@ public class ExpressionParser {
     ASTExprNode getAndOrExpr() throws Exception {
         //handled separately
         return getOrExpr();
+    }
+
+    ASTExprNode getCallExpr() throws Exception {
+        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.CALL) {
+            return getParantheseExpr();
+        }else {
+            m_lexer.advance();
+            String funcName = m_lexer.m_currentToken.m_value;
+            m_lexer.expect(TokenIntf.Type.IDENT);
+            m_lexer.expect(TokenIntf.Type.LPAREN);
+            List<ASTExprNode> argumentList = getArgumentList();
+            m_lexer.expect(TokenIntf.Type.RPAREN);
+            m_lexer.expect(Type.SEMICOLON);
+            return new ASTCallExprNode(funcName, argumentList);
+        }
+
+    }
+
+    private List<ASTExprNode> getArgumentList() throws Exception {
+        List<ASTExprNode> argumentList = new ArrayList<>();
+
+
+        if(m_lexer.m_currentToken.m_type != Type.IDENT){
+            return argumentList;
+        }else {
+            argumentList.add(getQuestionMarkExpr());
+            while (m_lexer.m_currentToken.m_type == Type.COMMA) {
+                argumentList.add(getQuestionMarkExpr());
+            }
+            return argumentList;
+        }
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
