@@ -134,4 +134,26 @@ public class StmtParser {
 
         return new ASTJumpBlockNode(stmtlistNode);
     }
+
+    ASTStmtNode parseExecuteNTimesStmt() throws Exception {
+    	// EXECUTE INTEGER TIMES LBRACE stmtList RBRACE
+    	m_lexer.expect(Type.EXECUTE);
+    	
+    	if(m_lexer.m_currentToken.m_type != Type.INTEGER) {
+            throw new Exception("Expected token of type Integer");
+        }
+    	
+    	int count = Integer.parseInt(m_lexer.m_currentToken.m_value);
+    	
+    	m_lexer.expect(Type.TIMES);
+    	m_lexer.expect(Type.LBRACE);
+    	
+    	ASTStmtListNode stmtlistNode = parseStmtlist();
+    	
+    	m_lexer.expect(Type.RBRACE);
+    	
+    	return new ASTExecuteNTimesNode(count, stmtlistNode);
+    }
+    
+    
 }
