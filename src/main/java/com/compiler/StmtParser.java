@@ -77,7 +77,11 @@ public class StmtParser {
         	return parseExecuteNTimesStmt();
         }
 
-        m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
+        if (type == TokenIntf.Type.NUMERIC_IF) {
+            return parseNumericIfStmt();
+        }
+
+        m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
         return null; // unreachable
     }
 
@@ -142,6 +146,41 @@ public class StmtParser {
 
         return new ASTJumpBlockNode(stmtlistNode);
     }
+
+
+    ASTStmtNode parseNumericIfStmt() throws Exception {
+        // NUMERIC_IF LPAR expr RPAR LBRACE numericIfBlock RBRACE
+        m_lexer.expect(Type.NUMERIC_IF);
+        m_lexer.expect(Type.LPAREN);
+        final ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.LBRACE);
+
+
+        // numericIfBlock positiveBlock negativeBlock zeroBlock
+        // positiveBlock: POSITIVE LBRACE stmtlist RBRACE
+        final ASTStmtListNode positiveStmtList = parseNumericIfBlock(Type.POSITIVE);
+
+        // negativeBlock: NEGATIVE LBRACE stmtlist RBRACE
+        final ASTStmtListNode negativeStmtList = parseNumericIfBlock(Type.NEGATIVE);
+
+        // zeroBlock: ZERO LBRACE stmtlist RBRACE
+        final ASTStmtListNode zeroStmtList = parseNumericIfBlock(Type.ZERO);
+
+
+        m_lexer.expect(Type.RBRACE);
+        return new ASTNumericIfNode(predicate, positiveStmtList, negativeStmtList, zeroStmtList);
+    }
+
+
+    private ASTStmtListNode parseNumericIfBlock(final Type type) throws Exception {
+        m_lexer.expect(type);
+        m_lexer.expect(Type.LBRACE);
+        final ASTStmtListNode stmtList = parseStmtlist();
+        m_lexer.expect(Type.RBRACE);
+        return stmtList;
+    }
+
 
     ASTWhileLoopStmtNode parseWhileLoopStmt() throws Exception {
         // whileStmt: WHILE LPAREN questionMarkExpr RPAREN blockStmt SEMICOLON
