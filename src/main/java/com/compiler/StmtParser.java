@@ -65,11 +65,16 @@ public class StmtParser {
         if (type == TokenIntf.Type.BLOCK) {
             return parseJumpBlockStmt();
         }
+      
         if (type == TokenIntf.Type.WHILE) {
             return parseWhileLoopStmt();
         }
         if (type == TokenIntf.Type.DO) {
             return parseDoWhileLoopStmt();
+        }
+      
+        if (type == TokenIntf.Type.EXECUTE) {
+        	return parseExecuteNTimesStmt();
         }
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
@@ -162,5 +167,28 @@ public class StmtParser {
         m_lexer.expect(Type.RPAREN);
         m_lexer.expect(Type.SEMICOLON);
         return new ASTDoWhileLoopStmtNode(predicate, body);
+    }
+    
+    ASTStmtNode parseExecuteNTimesStmt() throws Exception {
+    	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE
+    	m_lexer.expect(Type.EXECUTE);
+    	
+    	if(m_lexer.m_currentToken.m_type != Type.INTEGER && m_lexer.m_currentToken.m_type != Type.IDENT) {
+            throw new Exception("Expected token of type Integer or Identifier");
+        }
+    	ASTExprNode count;
+    	
+    	count = m_exprParser.getQuestionMarkExpr();
+    	
+    	m_lexer.expect(Type.TIMES);
+    	m_lexer.expect(Type.LBRACE);
+    	
+    	ASTStmtListNode stmtlistNode = parseStmtlist();
+    	
+    	
+    	m_lexer.expect(Type.RBRACE);
+    	m_lexer.expect(Type.SEMICOLON);
+    	
+    	return new ASTExecuteNTimesNode(count, stmtlistNode);
     }
 }
