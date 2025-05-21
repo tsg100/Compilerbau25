@@ -65,6 +65,9 @@ public class StmtParser {
         if (type == TokenIntf.Type.BLOCK) {
             return parseJumpBlockStmt();
         }
+        if (type == TokenIntf.Type.EXECUTE) {
+        	return parseExecuteNTimesStmt();
+        }
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
         return null; // unreachable
@@ -136,21 +139,24 @@ public class StmtParser {
     }
 
     ASTStmtNode parseExecuteNTimesStmt() throws Exception {
-    	// EXECUTE INTEGER TIMES LBRACE stmtList RBRACE
+    	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE
     	m_lexer.expect(Type.EXECUTE);
     	
-    	if(m_lexer.m_currentToken.m_type != Type.INTEGER) {
-            throw new Exception("Expected token of type Integer");
+    	if(m_lexer.m_currentToken.m_type != Type.INTEGER && m_lexer.m_currentToken.m_type != Type.IDENT) {
+            throw new Exception("Expected token of type Integer or Identifier");
         }
+    	ASTExprNode count;
     	
-    	int count = Integer.parseInt(m_lexer.m_currentToken.m_value);
+    	count = m_exprParser.getQuestionMarkExpr();
     	
     	m_lexer.expect(Type.TIMES);
     	m_lexer.expect(Type.LBRACE);
     	
     	ASTStmtListNode stmtlistNode = parseStmtlist();
     	
+    	
     	m_lexer.expect(Type.RBRACE);
+    	m_lexer.expect(Type.SEMICOLON);
     	
     	return new ASTExecuteNTimesNode(count, stmtlistNode);
     }
