@@ -153,8 +153,6 @@ public class StmtParser {
         m_lexer.expect(Type.NUMERIC_IF);
         m_lexer.expect(Type.LPAREN);
         final ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
-        System.out.println(predicate.eval());
-        System.out.println("DEBUG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         m_lexer.expect(Type.RPAREN);
         m_lexer.expect(Type.LBRACE);
 
