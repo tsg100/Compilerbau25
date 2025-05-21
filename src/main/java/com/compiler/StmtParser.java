@@ -65,6 +65,14 @@ public class StmtParser {
         if (type == TokenIntf.Type.BLOCK) {
             return parseJumpBlockStmt();
         }
+      
+        if (type == TokenIntf.Type.WHILE) {
+            return parseWhileLoopStmt();
+        }
+        if (type == TokenIntf.Type.DO) {
+            return parseDoWhileLoopStmt();
+        }
+      
         if (type == TokenIntf.Type.EXECUTE) {
         	return parseExecuteNTimesStmt();
         }
@@ -82,20 +90,19 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseAssignStmt() throws Exception {
-    	
-    	String identifier = m_lexer.m_currentToken.m_value;
-    	m_lexer.expect(TokenIntf.Type.IDENT);        
-    	Symbol ident = m_symbolTable.getSymbol(identifier);
-    	if (ident != null) {
-    		m_lexer.advance(); // ASSIGN
-    		ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+
+        String identifier = m_lexer.m_currentToken.m_value;
+        m_lexer.expect(TokenIntf.Type.IDENT);
+        Symbol ident = m_symbolTable.getSymbol(identifier);
+        if (ident != null) {
+            m_lexer.advance(); // ASSIGN
+            ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
             m_lexer.expect(TokenIntf.Type.SEMICOLON);
-    		return new ASTAssignStmtNode(ident, expr);
-		}
-    	else {
-			m_lexer.throwCompilerException(String.format("%s not declared" , identifier), "");
-		}
-    	
+            return new ASTAssignStmtNode(ident, expr);
+        } else {
+            m_lexer.throwCompilerException(String.format("%s not declared", identifier), "");
+        }
+
         return null;
     }
 
@@ -104,23 +111,21 @@ public class StmtParser {
         // Consume declare
         m_lexer.expect(TokenIntf.Type.DECLARE);
 
-
-        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
+        if (m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
             throw new Exception("Expected token of type Identifier");
         }
 
         String identifier = m_lexer.m_currentToken.m_value;
 
-        if(m_symbolTable.getSymbol(identifier) != null ){
-            throw new Exception("Variable was already declared: "+ identifier);
+        if (m_symbolTable.getSymbol(identifier) != null) {
+            throw new Exception("Variable was already declared: " + identifier);
         }
-        
+
         m_symbolTable.createSymbol(identifier);
-        
+
         m_lexer.advance(); // IDENT
 
         m_lexer.expect(TokenIntf.Type.SEMICOLON);
-
 
         return new ASTDeclareStmtNode(identifier);
 
@@ -138,6 +143,32 @@ public class StmtParser {
         return new ASTJumpBlockNode(stmtlistNode);
     }
 
+    ASTWhileLoopStmtNode parseWhileLoopStmt() throws Exception {
+        // whileStmt: WHILE LPAREN questionMarkExpr RPAREN blockStmt SEMICOLON
+        m_lexer.expect(TokenIntf.Type.WHILE);
+        m_lexer.expect(TokenIntf.Type.LPAREN);
+        ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(TokenIntf.Type.RPAREN);
+
+        ASTStmtNode body = parseBlockStmt();
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTWhileLoopStmtNode(predicate, body);
+
+    }
+
+    ASTDoWhileLoopStmtNode parseDoWhileLoopStmt() throws Exception {
+        // doWhileStmt: DO blockStmt WHILE questionMarkExpr SEMICOLON
+
+        m_lexer.expect(Type.DO);
+        ASTStmtNode body = parseBlockStmt();
+        m_lexer.expect(Type.WHILE);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTDoWhileLoopStmtNode(predicate, body);
+    }
+    
     ASTStmtNode parseExecuteNTimesStmt() throws Exception {
     	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE
     	m_lexer.expect(Type.EXECUTE);
@@ -160,6 +191,3 @@ public class StmtParser {
     	
     	return new ASTExecuteNTimesNode(count, stmtlistNode);
     }
-    
-    
-}
