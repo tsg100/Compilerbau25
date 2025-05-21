@@ -10,12 +10,12 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         public StateMachineIntf m_machine;
         public int m_acceptPos;
 
-        public MachineInfo(final StateMachineIntf machine) {
+        public MachineInfo(StateMachineIntf machine) {
             m_machine = machine;
             m_acceptPos = 0;
         }
 
-        public void init(final String input) {
+        public void init(String input) {
             m_acceptPos = 0;
             m_machine.init(input);
         }
@@ -94,21 +94,21 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         // addMachine(new compiler.machines.IdentifierMachine());
     }
 
-    public void addMachine(final StateMachineIntf machine) {
+    public void addMachine(StateMachineIntf machine) {
         m_machineList.add(new MachineInfo(machine));
     }
 
-    public void addKeywordMachine(final String keyword, final TokenIntf.Type tokenType) {
+    public void addKeywordMachine(String keyword, TokenIntf.Type tokenType) {
         m_machineList.add(new MachineInfo(new com.compiler.machines.KeywordMachine(keyword, tokenType)));
     }
 
-    public void initMachines(final String input) {
-        for (final MachineInfo machine : m_machineList) {
+    public void initMachines(String input) {
+        for (MachineInfo machine : m_machineList) {
             machine.init(input);
         }
     }
 
-    public void init(final String input) throws Exception {
+    public void init(String input) throws Exception {
         m_input = new MultiLineInputReader(input);
         m_currentToken = new Token();
         advance();
@@ -117,7 +117,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
     public Token nextToken() throws Exception {
         // check end of file
         if (m_input.isEmpty()) {
-            final Token token = new Token();
+            Token token = new Token();
             token.m_type = Token.Type.EOF;
             token.m_value = new String();
             return token;
@@ -130,7 +130,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         do {
             machineActive = false;
             // for each machine in process
-            for (final MachineInfo machine : m_machineList) {
+            for (MachineInfo machine : m_machineList) {
                 if (machine.m_machine.isFinished()) {
                     continue;
                 }
@@ -147,7 +147,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         } while (machineActive); // end while some machine in process
         // select first machine with largest final pos (greedy)
         MachineInfo bestMatch = new MachineInfo(null);
-        for (final MachineInfo machine : m_machineList) {
+        for (MachineInfo machine : m_machineList) {
             if (machine.m_acceptPos > bestMatch.m_acceptPos) {
                 bestMatch = machine;
             }
@@ -157,10 +157,10 @@ public class Lexer implements LexerIntf, LexerParserIntf {
             throw new CompilerException("Illegal token", m_input.getLine(), m_input.getMarkedCodeSnippetCurrentPos(), null);
         }
         // set next word [start pos, final pos)
-        final Token token = new Token();
+        Token token = new Token();
         token.m_firstLine = m_input.getLine();
         token.m_firstCol = m_input.getCol();
-        final String nextWord = m_input.advanceAndGet(bestMatch.m_acceptPos);
+        String nextWord = m_input.advanceAndGet(bestMatch.m_acceptPos);
         token.m_lastLine = m_input.getLine();
         token.m_lastCol = m_input.getCol();
         token.m_type = bestMatch.m_machine.getType();
@@ -168,12 +168,12 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         return token;
     }
 
-    public void processInput(final String input, final OutputStreamWriter outStream) throws Exception {
+    public void processInput(String input, OutputStreamWriter outStream) throws Exception {
         m_input = new MultiLineInputReader(input);
         // while input available
         while (!m_input.isEmpty()) {
             // get next word
-            final Token curWord = nextToken();
+            Token curWord = nextToken();
             // break on failure
             if (curWord.m_type == Token.Type.EOF) {
                 outStream.write("ERROR\n");
@@ -204,7 +204,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         m_currentToken = token;
     }
 
-    public void expect(final Token.Type tokenType) throws Exception {
+    public void expect(Token.Type tokenType) throws Exception {
         if (tokenType == m_currentToken.m_type) {
             advance();
         } else {
@@ -215,7 +215,7 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         }
     }
 
-    public boolean accept(final Token.Type tokenType) throws Exception {
+    public boolean accept(Token.Type tokenType) throws Exception {
         if (tokenType == m_currentToken.m_type) {
             advance();
             return true;
@@ -223,8 +223,8 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         return false;
     }
     
-    public void throwCompilerException(final String reason, final String expected) throws Exception {
-        final String codeSnippet = m_input.getMarkedCodeSnippet(m_currentToken.m_firstLine, m_currentToken.m_firstCol, m_currentToken.m_lastLine, m_currentToken.m_lastCol);
+    public void throwCompilerException(String reason, String expected) throws Exception {
+        String codeSnippet = m_input.getMarkedCodeSnippet(m_currentToken.m_firstLine, m_currentToken.m_firstCol, m_currentToken.m_lastLine, m_currentToken.m_lastCol);
         throw new CompilerException(reason, m_currentToken.m_firstLine, codeSnippet, expected);
     }
 }
