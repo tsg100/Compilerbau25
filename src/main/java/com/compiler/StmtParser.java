@@ -67,9 +67,23 @@ public class StmtParser {
         }
         if (type == Type.FUNCTION) {
             return parseFunctionStmt();
+        }      
+        if (type == TokenIntf.Type.WHILE) {
+            return parseWhileLoopStmt();
+        }
+        if (type == TokenIntf.Type.DO) {
+            return parseDoWhileLoopStmt();
+        }
+      
+        if (type == TokenIntf.Type.EXECUTE) {
+        	return parseExecuteNTimesStmt();
         }
 
-        m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT");
+        if (type == TokenIntf.Type.NUMERIC_IF) {
+            return parseNumericIfStmt();
+        }
+
+        m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
         return null; // unreachable
     }
 
@@ -132,20 +146,19 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseAssignStmt() throws Exception {
-    	
-    	String identifier = m_lexer.m_currentToken.m_value;
-    	m_lexer.expect(TokenIntf.Type.IDENT);        
-    	Symbol ident = m_symbolTable.getSymbol(identifier);
-    	if (ident != null) {
-    		m_lexer.advance(); // ASSIGN
-    		ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
+
+        String identifier = m_lexer.m_currentToken.m_value;
+        m_lexer.expect(TokenIntf.Type.IDENT);
+        Symbol ident = m_symbolTable.getSymbol(identifier);
+        if (ident != null) {
+            m_lexer.advance(); // ASSIGN
+            ASTExprNode expr = m_exprParser.getQuestionMarkExpr();
             m_lexer.expect(TokenIntf.Type.SEMICOLON);
-    		return new ASTAssignStmtNode(ident, expr);
-		}
-    	else {
-			m_lexer.throwCompilerException(String.format("%s not declared" , identifier), "");
-		}
-    	
+            return new ASTAssignStmtNode(ident, expr);
+        } else {
+            m_lexer.throwCompilerException(String.format("%s not declared", identifier), "");
+        }
+
         return null;
     }
 
@@ -154,23 +167,21 @@ public class StmtParser {
         // Consume declare
         m_lexer.expect(TokenIntf.Type.DECLARE);
 
-
-        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
+        if (m_lexer.m_currentToken.m_type != TokenIntf.Type.IDENT) {
             throw new Exception("Expected token of type Identifier");
         }
 
         String identifier = m_lexer.m_currentToken.m_value;
 
-        if(m_symbolTable.getSymbol(identifier) != null ){
-            throw new Exception("Variable was already declared: "+ identifier);
+        if (m_symbolTable.getSymbol(identifier) != null) {
+            throw new Exception("Variable was already declared: " + identifier);
         }
-        
+
         m_symbolTable.createSymbol(identifier);
-        
+
         m_lexer.advance(); // IDENT
 
         m_lexer.expect(TokenIntf.Type.SEMICOLON);
-
 
         return new ASTDeclareStmtNode(identifier);
 
@@ -186,5 +197,89 @@ public class StmtParser {
         m_lexer.expect(Type.RBRACE);
 
         return new ASTJumpBlockNode(stmtlistNode);
+    }
+
+
+    ASTStmtNode parseNumericIfStmt() throws Exception {
+        // NUMERIC_IF LPAR expr RPAR LBRACE numericIfBlock RBRACE
+        m_lexer.expect(Type.NUMERIC_IF);
+        m_lexer.expect(Type.LPAREN);
+        final ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.LBRACE);
+
+
+        // numericIfBlock positiveBlock negativeBlock zeroBlock
+        // positiveBlock: POSITIVE LBRACE stmtlist RBRACE
+        final ASTStmtListNode positiveStmtList = parseNumericIfBlock(Type.POSITIVE);
+
+        // negativeBlock: NEGATIVE LBRACE stmtlist RBRACE
+        final ASTStmtListNode negativeStmtList = parseNumericIfBlock(Type.NEGATIVE);
+
+        // zeroBlock: ZERO LBRACE stmtlist RBRACE
+        final ASTStmtListNode zeroStmtList = parseNumericIfBlock(Type.ZERO);
+
+
+        m_lexer.expect(Type.RBRACE);
+        return new ASTNumericIfNode(predicate, positiveStmtList, negativeStmtList, zeroStmtList);
+    }
+
+
+    private ASTStmtListNode parseNumericIfBlock(final Type type) throws Exception {
+        m_lexer.expect(type);
+        m_lexer.expect(Type.LBRACE);
+        final ASTStmtListNode stmtList = parseStmtlist();
+        m_lexer.expect(Type.RBRACE);
+        return stmtList;
+    }
+
+
+    ASTWhileLoopStmtNode parseWhileLoopStmt() throws Exception {
+        // whileStmt: WHILE LPAREN questionMarkExpr RPAREN blockStmt SEMICOLON
+        m_lexer.expect(TokenIntf.Type.WHILE);
+        m_lexer.expect(TokenIntf.Type.LPAREN);
+        ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(TokenIntf.Type.RPAREN);
+
+        ASTStmtNode body = parseBlockStmt();
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTWhileLoopStmtNode(predicate, body);
+
+    }
+
+    ASTDoWhileLoopStmtNode parseDoWhileLoopStmt() throws Exception {
+        // doWhileStmt: DO blockStmt WHILE questionMarkExpr SEMICOLON
+
+        m_lexer.expect(Type.DO);
+        ASTStmtNode body = parseBlockStmt();
+        m_lexer.expect(Type.WHILE);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.SEMICOLON);
+        return new ASTDoWhileLoopStmtNode(predicate, body);
+    }
+    
+    ASTStmtNode parseExecuteNTimesStmt() throws Exception {
+    	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE
+    	m_lexer.expect(Type.EXECUTE);
+    	
+    	if(m_lexer.m_currentToken.m_type != Type.INTEGER && m_lexer.m_currentToken.m_type != Type.IDENT) {
+            throw new Exception("Expected token of type Integer or Identifier");
+        }
+    	ASTExprNode count;
+    	
+    	count = m_exprParser.getQuestionMarkExpr();
+    	
+    	m_lexer.expect(Type.TIMES);
+    	m_lexer.expect(Type.LBRACE);
+    	
+    	ASTStmtListNode stmtlistNode = parseStmtlist();
+    	
+    	
+    	m_lexer.expect(Type.RBRACE);
+    	m_lexer.expect(Type.SEMICOLON);
+    	
+    	return new ASTExecuteNTimesNode(count, stmtlistNode);
     }
 }

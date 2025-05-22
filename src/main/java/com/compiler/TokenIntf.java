@@ -54,6 +54,10 @@ public abstract class TokenIntf {
 		BLOCK,
 		DEFAULT,
 		TDASH,
+		NUMERIC_IF,
+		POSITIVE,
+		NEGATIVE,
+		ZERO
 	}
 
 	public Type m_type;

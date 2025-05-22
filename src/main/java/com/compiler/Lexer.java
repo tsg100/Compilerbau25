@@ -78,6 +78,10 @@ public class Lexer implements LexerIntf, LexerParserIntf {
         addKeywordMachine("RETURN", com.compiler.TokenIntf.Type.RETURN);
         addKeywordMachine("BLOCK", com.compiler.TokenIntf.Type.BLOCK);
         addKeywordMachine("DEFAULT", com.compiler.TokenIntf.Type.DEFAULT);
+        addKeywordMachine("NUMERIC_IF", com.compiler.TokenIntf.Type.NUMERIC_IF);
+        addKeywordMachine("POSITIVE", com.compiler.TokenIntf.Type.POSITIVE);
+        addKeywordMachine("NEGATIVE", com.compiler.TokenIntf.Type.NEGATIVE);
+        addKeywordMachine("ZERO", com.compiler.TokenIntf.Type.ZERO);
 
         addMachine(new com.compiler.machines.IdentifierMachine());
         addMachine(new com.compiler.machines.IntegerMachine());
