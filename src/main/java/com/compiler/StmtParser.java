@@ -209,7 +209,7 @@ public class StmtParser {
     }
     
     ASTStmtNode parseExecuteNTimesStmt() throws Exception {
-    	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE
+    	// EXECUTE integer|identifier TIMES LBRACE stmtList RBRACE SEMICOLON
     	m_lexer.expect(Type.EXECUTE);
     	
     	if(m_lexer.m_currentToken.m_type != Type.INTEGER && m_lexer.m_currentToken.m_type != Type.IDENT) {
