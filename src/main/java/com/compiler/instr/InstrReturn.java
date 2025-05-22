@@ -9,7 +9,6 @@ public class InstrReturn extends InstrIntf {
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
         env.setInstrIter(env.popReturnAddr());
-        //env.getInstrIter().next();
     }
 
     @Override

@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 public class InstrPushCallStack extends InstrIntf {
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {
-        // maybe we need to advance by one iterator-thingy-stuff...
         env.pushReturnAddr(env.getInstrIter());
     }
 
