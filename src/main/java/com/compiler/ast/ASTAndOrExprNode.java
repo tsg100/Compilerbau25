@@ -11,6 +11,7 @@ public class ASTAndOrExprNode extends ASTExprNode {
     ASTExprNode m_operand0;
     ASTExprNode m_operand1;
     Type m_operator;
+    Integer m_constValue;
 
     public ASTAndOrExprNode(ASTExprNode operand0, ASTExprNode operand1, Type operator) {
         m_operand0 = operand0;
@@ -43,5 +44,18 @@ public class ASTAndOrExprNode extends ASTExprNode {
         outStream.write("\n");
         m_operand0.print(outStream, indent + "  ");
         m_operand1.print(outStream, indent + "  ");
+    }
+
+    public Integer constFold() {
+        Integer lhsConst = m_operand0.constFold();
+        Integer rhsConst = m_operand1.constFold();
+        if (lhsConst != null && rhsConst != null) {
+
+                m_constValue = eval();
+
+        } else {
+            m_constValue = null;
+        }
+        return m_constValue;
     }
 }
