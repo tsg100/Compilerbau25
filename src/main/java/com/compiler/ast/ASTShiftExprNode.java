@@ -4,6 +4,8 @@ import java.io.OutputStreamWriter;
 
 import com.compiler.CompileEnvIntf;
 import com.compiler.InstrIntf;
+import com.compiler.TokenIntf.Type;
+import com.compiler.instr.InstrIntegerLiteral;
 import com.compiler.instr.InstrShift;
 
 public class ASTShiftExprNode extends ASTExprNode{
@@ -11,6 +13,7 @@ public class ASTShiftExprNode extends ASTExprNode{
 	ASTExprNode m_operand0;
     ASTExprNode m_operand1;
     com.compiler.TokenIntf.Type m_operator;
+    Integer m_constValue;
 
     public ASTShiftExprNode(ASTExprNode operand0, ASTExprNode operand1, com.compiler.TokenIntf.Type operator) {
         m_operand0 = operand0;
@@ -29,6 +32,13 @@ public class ASTShiftExprNode extends ASTExprNode{
     }
     
     public InstrIntf codegen(CompileEnvIntf compileEnv) {
+    	constFold();
+        if (m_constValue != null) {
+            InstrIntf constInstr = new InstrIntegerLiteral(m_constValue.toString());
+            compileEnv.addInstr(constInstr);
+            return constInstr;
+        }
+    	
         InstrIntf operand0 = m_operand0.codegen(compileEnv);
         InstrIntf operand1 = m_operand1.codegen(compileEnv);
         InstrIntf shiftInstr = new InstrShift(m_operator, operand0, operand1);
@@ -43,5 +53,23 @@ public class ASTShiftExprNode extends ASTExprNode{
         outStream.write("\n");
         m_operand0.print(outStream, indent + "  ");
         m_operand1.print(outStream, indent + "  ");
+    }
+    
+    public Integer constFold() {
+    	Integer lhs = m_operand0.constFold();
+    	Integer rhs = m_operand1.constFold();
+    	
+    	if (m_operand0 == null || m_operand1 == null) {
+    		m_constValue = null;
+		}
+    	
+    	if (m_operator == Type.SHIFTLEFT) {
+    		m_constValue = lhs << rhs;
+    	}
+
+    	if (m_operator == Type.SHIFTRIGHT) {
+    		m_constValue = lhs << rhs;
+    	}
+    	return m_constValue;
     }
 }
