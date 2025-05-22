@@ -15,15 +15,15 @@ public class StmtParser {
     public StmtParser(Lexer lexer) {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
-        m_exprParser = new ExpressionParser(lexer, m_symbolTable);
-        m_functionTable = null;
+        m_functionTable = new FunctionTable();
+        m_exprParser = new ExpressionParser(lexer, m_symbolTable, m_functionTable);
     }
 
     public StmtParser(Lexer lexer, SymbolTable symbolTable, FunctionTable functionTable) {
         m_lexer = lexer;
         m_symbolTable = symbolTable;
         m_functionTable = functionTable;
-        m_exprParser = new ExpressionParser(lexer, m_symbolTable);
+        m_exprParser = new ExpressionParser(lexer, m_symbolTable, m_functionTable);
     }
 
     public ASTStmtNode parseProgram(String program) throws Exception {
@@ -65,7 +65,9 @@ public class StmtParser {
         if (type == TokenIntf.Type.BLOCK) {
             return parseJumpBlockStmt();
         }
-      
+        if (type == Type.FUNCTION) {
+            return parseFunctionStmt();
+        }      
         if (type == TokenIntf.Type.WHILE) {
             return parseWhileLoopStmt();
         }
@@ -83,6 +85,56 @@ public class StmtParser {
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
         return null; // unreachable
+    }
+
+    public ASTStmtNode parseFunctionStmt() throws Exception {
+        m_lexer.expect(Type.FUNCTION);
+        String functionName = m_lexer.m_currentToken.m_value;
+        m_lexer.expect(TokenIntf.Type.IDENT);
+        m_lexer.expect(Type.LPAREN);
+        List<String> parameterList = parseParameterList();
+        parameterList.forEach(e -> m_symbolTable.createSymbol(e));
+        m_lexer.expect(TokenIntf.Type.RPAREN);
+
+        m_lexer.expect(TokenIntf.Type.LBRACE);
+        List<ASTStmtNode> functionBody = parseFunctionBody();
+        m_lexer.expect(TokenIntf.Type.RBRACE);
+        m_lexer.expect(Type.SEMICOLON);
+        m_functionTable.createFunction(functionName, parameterList);
+        return new ASTFunctionStmtNode(functionName, parameterList, functionBody);
+    }
+
+    private List<ASTStmtNode> parseFunctionBody() throws Exception {
+        List<ASTStmtNode> stmtList = new ArrayList<>();
+        while(m_lexer.m_currentToken.m_type != Type.RETURN){
+            stmtList.add(parseStmt());
+        }
+        stmtList.add(parseReturnStmt());
+        return stmtList;
+    }
+
+    private ASTStmtNode parseReturnStmt() throws Exception {
+        m_lexer.expect(Type.RETURN);
+        ASTStmtNode returnStmtNode = new ASTReturnStmtNode(m_exprParser.getQuestionMarkExpr());
+        m_lexer.expect(Type.SEMICOLON);
+        return returnStmtNode;
+    }
+
+    private List<String> parseParameterList() throws Exception {
+        List<String> parameterList = new ArrayList<>();
+        if(m_lexer.m_currentToken.m_type != Type.IDENT){
+            return parameterList;
+        } else {
+            parameterList.add(m_lexer.m_currentToken.m_value);
+            m_lexer.advance();
+
+            while (m_lexer.m_currentToken.m_type == Type.COMMA) {
+                m_lexer.advance();
+                parameterList.add(m_lexer.m_currentToken.m_value);
+                m_lexer.expect(Type.IDENT);
+            }
+            return parameterList;
+        }
     }
 
     public ASTStmtNode parsePrintStmt() throws Exception {
