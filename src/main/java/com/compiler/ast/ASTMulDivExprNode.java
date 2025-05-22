@@ -6,6 +6,7 @@ public class ASTMulDivExprNode extends ASTExprNode {
     ASTExprNode m_operand0;
     ASTExprNode m_operand1;
     com.compiler.TokenIntf.Type m_operator;
+    Integer m_constValue;
 
     public ASTMulDivExprNode(ASTExprNode operand0, ASTExprNode operand1, com.compiler.TokenIntf.Type operator) {
         m_operand0 = operand0;
@@ -47,11 +48,36 @@ public class ASTMulDivExprNode extends ASTExprNode {
     }
 
     public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf compileEnv) {
+        constFold();
+        if(m_constValue != null) {
+
+            com.compiler.InstrIntf constInstr = new com.compiler.instr.InstrIntegerLiteral(m_constValue.toString());
+            compileEnv.addInstr(constInstr);
+            return constInstr;
+
+        }
+
         com.compiler.InstrIntf operand0 = m_operand0.codegen(compileEnv);
         com.compiler.InstrIntf operand1 = m_operand1.codegen(compileEnv);
 
         com.compiler.InstrIntf mulDivInstr = new com.compiler.instr.InstrMulDiv(m_operator, operand0, operand1);
         compileEnv.addInstr(mulDivInstr);
         return mulDivInstr;
+    }
+
+
+    public Integer constFold() {
+        Integer lhsConst = m_operand0.constFold();
+        Integer rhsConst = m_operand1.constFold();
+        if (lhsConst != null && rhsConst != null) {
+            if (m_operator == com.compiler.TokenIntf.Type.MUL) {
+                m_constValue = lhsConst * rhsConst;
+            } else {
+                m_constValue = lhsConst / rhsConst;
+            }
+        } else {
+            m_constValue = null;
+        }
+        return m_constValue;
     }
 }
