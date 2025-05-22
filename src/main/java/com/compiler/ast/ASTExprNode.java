@@ -5,4 +5,7 @@ public abstract class ASTExprNode extends ASTNode {
     public com.compiler.InstrIntf codegen(com.compiler.CompileEnvIntf env) {
         return null;
     }
+    public Integer constFold() {
+        return null;
+    }
 }
