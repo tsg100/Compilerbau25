@@ -1,7 +1,7 @@
-package compiler.instr;
+package com.compiler.instr;
 
-import compiler.ExecutionEnvIntf;
-import compiler.InstrIntf;
+import com.compiler.ExecutionEnvIntf;
+import com.compiler.InstrIntf;
 
 import java.io.OutputStreamWriter;
 

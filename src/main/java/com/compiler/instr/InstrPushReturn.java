@@ -1,7 +1,7 @@
-package compiler.instr;
+package com.compiler.instr;
 
-import compiler.ExecutionEnvIntf;
-import compiler.InstrIntf;
+import com.compiler.ExecutionEnvIntf;
+import com.compiler.InstrIntf;
 
 import java.io.OutputStreamWriter;
 import java.util.ListIterator;
@@ -12,7 +12,7 @@ import java.util.ListIterator;
  * to be used with _InstPopReturn_
  */
 public class InstrPushReturn extends InstrIntf {
-    private final compiler.InstrIntf returnValue;
+    private final com.compiler.InstrIntf returnValue;
     public InstrPushReturn(InstrIntf returnValue) {
         this.returnValue = returnValue;
     }
