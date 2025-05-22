@@ -88,6 +88,13 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseFunctionStmt() throws Exception {
+        // functionDecl: FUNCTION IDENTIFIER RPAREN idList RPAREN LBRACE functionBody RBRACE SEMICOLON
+        //
+        // idList: IDENTIFIER idListPost | eps
+        // idListPost: eps | COMMA IDENFIER idListPost
+        //
+        //functionBody: RETURN expr | stmt functionBody
+
         m_lexer.expect(Type.FUNCTION);
         String functionName = m_lexer.m_currentToken.m_value;
         m_lexer.expect(TokenIntf.Type.IDENT);
@@ -107,6 +114,9 @@ public class StmtParser {
     private List<ASTStmtNode> parseFunctionBody() throws Exception {
         List<ASTStmtNode> stmtList = new ArrayList<>();
         while(m_lexer.m_currentToken.m_type != Type.RETURN){
+            if(m_lexer.m_currentToken.m_type == Type.RBRACE){
+                m_lexer.throwCompilerException("Invalid end of function body", "RETURN");
+            }
             stmtList.add(parseStmt());
         }
         stmtList.add(parseReturnStmt());
