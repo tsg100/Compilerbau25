@@ -7,11 +7,7 @@ public class InterpreterMain {
     public static void main(String[] args) throws Exception {
         String input = new String("""
           {
-            DECLARE a;
-            BLOCK {
-              a = 2;
-            }
-            PRINT a * 3;
+            PRINT 4 + 3 - 2;
           }
                 """);
         com.compiler.CompileEnv compileEnv = new com.compiler.CompileEnv(input, false);

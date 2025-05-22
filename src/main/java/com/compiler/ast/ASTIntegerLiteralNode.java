@@ -28,4 +28,9 @@ public class ASTIntegerLiteralNode extends ASTExprNode {
         compileEnv.addInstr(literalInstr);
         return literalInstr;
     }
+
+    @Override
+    public Integer constFold() {
+        return Integer.valueOf(m_value);
+    }
 }

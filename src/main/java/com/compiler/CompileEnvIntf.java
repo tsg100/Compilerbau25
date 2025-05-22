@@ -20,7 +20,7 @@ public interface CompileEnvIntf {
 	 */
 	public void dump(OutputStream outStream) throws Exception;
 
-    /**
+	/**
 	 * execute generated program
 	 */
 	public void execute(OutputStreamWriter outStream) throws Exception;
