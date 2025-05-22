@@ -68,7 +68,7 @@ public class ASTShiftExprNode extends ASTExprNode{
     	}
 
     	if (m_operator == Type.SHIFTRIGHT) {
-    		m_constValue = lhs << rhs;
+    		m_constValue = lhs >> rhs;
     	}
     	return m_constValue;
     }
