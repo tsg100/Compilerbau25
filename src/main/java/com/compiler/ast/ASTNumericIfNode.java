@@ -2,9 +2,12 @@ package com.compiler.ast;
 
 
 import com.compiler.InstrBlock;
+import com.compiler.InstrIntf;
+import com.compiler.TokenIntf;
+import com.compiler.instr.InstrCompare;
+import com.compiler.instr.InstrCondJump;
+import com.compiler.instr.InstrIntegerLiteral;
 import com.compiler.instr.InstrJump;
-import com.compiler.instr.InstrJumpIfNegative;
-import com.compiler.instr.InstrJumpIfPositive;
 
 import java.io.OutputStreamWriter;
 
@@ -60,22 +63,28 @@ public class ASTNumericIfNode extends ASTStmtNode {
 
     @Override
     public void codegen(final com.compiler.CompileEnvIntf env) {
-        final int result = predicate.eval();
-
         final InstrBlock negativeBlock = env.createBlock("numericIf_negativeBlock");
         final InstrBlock positiveBlock = env.createBlock("numericIf_positiveBlock");
         final InstrBlock zeroBlock = env.createBlock("numericIf_zeroBlock");
+        final InstrBlock checkPositivBlock = env.createBlock("numericIf_checkPositivBlock");
         final InstrBlock exitBlock = env.createBlock("numericIf_exitBlock");
 
         // Evaluate predicate
-        predicate.codegen(env);
+        final InstrIntf result = predicate.codegen(env);
 
-        final com.compiler.InstrIntf jumpIfNegative = new InstrJumpIfNegative(result, negativeBlock);
-        final com.compiler.InstrIntf jumpIfPositive = new InstrJumpIfPositive(result, positiveBlock);
-        final com.compiler.InstrIntf jumpToZero = new InstrJump(zeroBlock);
-        env.addInstr(jumpIfNegative);
-        env.addInstr(jumpIfPositive);
-        env.addInstr(jumpToZero);
+        // Instruction to jump in negativblock or check positiv block
+        final InstrIntf compareLessThan0 = new InstrCompare(TokenIntf.Type.LESS, result, new InstrIntegerLiteral("0"));
+        final InstrIntf conJumpWhenNegativ = new InstrCondJump(compareLessThan0, negativeBlock, checkPositivBlock);
+        env.addInstr(compareLessThan0);
+        env.addInstr(conJumpWhenNegativ);
+
+        // Check positiv block
+        env.setCurrentBlock(checkPositivBlock);
+        final InstrIntf result2 = predicate.codegen(env);
+        final InstrIntf compareGreaterThan0 = new InstrCompare(TokenIntf.Type.GREATER, result2, new InstrIntegerLiteral("0"));
+        final InstrIntf conJumpWhenPositiv = new InstrCondJump(compareGreaterThan0, positiveBlock, zeroBlock);
+        env.addInstr(compareGreaterThan0);
+        env.addInstr(conJumpWhenPositiv);
 
         // Negative block
         env.setCurrentBlock(negativeBlock);
