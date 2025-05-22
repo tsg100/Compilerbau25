@@ -18,6 +18,8 @@ public class InstrPushStack extends InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("PUSH %%"+m_instruction.getId());
+        os.write(String.format("PUSH %%%d\n",
+                m_instruction.getId()
+        ));
     }
 }

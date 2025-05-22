@@ -14,6 +14,7 @@ public class InstrReturn extends InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
+        os.write("JUMP POP_RETURN_ADDR");
 
     }
 }

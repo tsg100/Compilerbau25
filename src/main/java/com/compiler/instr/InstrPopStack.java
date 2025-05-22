@@ -16,6 +16,8 @@ public class InstrPopStack extends InstrIntf {
 
     @Override
     public void trace(OutputStreamWriter os) throws Exception {
-        os.write("POP_INTO " + m_value);
+        os.write(String.format("%%%d = POP\n",
+                m_id
+                ));
     }
 }
