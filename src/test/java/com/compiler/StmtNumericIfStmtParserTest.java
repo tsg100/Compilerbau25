@@ -2,24 +2,23 @@ package com.compiler;
 
 import org.junit.Test;
 
-public class StmtNumericIfStmtParserTest extends StmtParserTestBase {
+public class StmtNumericIfStmtParserTest extends InterpreterTestBase {
 
     @Test
     public void testNumericIfProgram01() throws Exception {
         String program = """
                 {
-                  NUMERIC_IF (2) {
-                    POSITIVE {
-                        PRINT 1;
-                    } NEGATIVE {
-                        PRINT -1;
-                    } ZERO {
-                        PRINT 0;
-                    }
-                  }
+                NUMERIC_IF (2)
+                POSITIVE {
+                    PRINT 1;
+                } NEGATIVE {
+                    PRINT -1;
+                } ZERO {
+                    PRINT 0;
+                }
                 }
                 """;
-        testParser(program, "1\n");
+        testInterpreter(program, "1\n");
     }
 
 
@@ -29,19 +28,18 @@ public class StmtNumericIfStmtParserTest extends StmtParserTestBase {
                 {
                    DECLARE in;
                    DECLARE out;
-                   NUMERIC_IF (in) {
-                       POSITIVE {
-                         out = 1;
-                       } NEGATIVE {
-                         out = 2;
-                       } ZERO {
-                         out = 3;
-                       }
+                   NUMERIC_IF (in)
+                   POSITIVE {
+                     out = 1;
+                   } NEGATIVE {
+                     out = 2;
+                   } ZERO {
+                     out = 3;
                    }
                    PRINT out;
                  }
                 """;
-        testParser(program, "3\n");
+        testInterpreter(program, "3\n");
     }
 
 
@@ -53,18 +51,17 @@ public class StmtNumericIfStmtParserTest extends StmtParserTestBase {
                     DECLARE y;
                     x = 2;
                     y = 3;
-                    NUMERIC_IF (x-y) {
-                        POSITIVE {
-                          y = x - y;
-                        } NEGATIVE {
-                          y = x + y;
-                        } ZERO {
-                          y = x * y;
-                        }
+                    NUMERIC_IF (x-y)
+                    POSITIVE {
+                      y = x - y;
+                    } NEGATIVE {
+                      y = x + y;
+                    } ZERO {
+                      y = x * y;
                     }
                     PRINT y;
                   }
                 """;
-        testParser(program, "5\n");
+        testInterpreter(program, "5\n");
     }
 }

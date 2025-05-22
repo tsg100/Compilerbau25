@@ -201,13 +201,11 @@ public class StmtParser {
 
 
     ASTStmtNode parseNumericIfStmt() throws Exception {
-        // NUMERIC_IF LPAR expr RPAR LBRACE numericIfBlock RBRACE
+        // NUMERIC_IF LPAR expr RPAR numericIfBlock
         m_lexer.expect(Type.NUMERIC_IF);
         m_lexer.expect(Type.LPAREN);
         final ASTExprNode predicate = this.m_exprParser.getQuestionMarkExpr();
         m_lexer.expect(Type.RPAREN);
-        m_lexer.expect(Type.LBRACE);
-
 
         // numericIfBlock positiveBlock negativeBlock zeroBlock
         // positiveBlock: POSITIVE LBRACE stmtlist RBRACE
@@ -219,8 +217,6 @@ public class StmtParser {
         // zeroBlock: ZERO LBRACE stmtlist RBRACE
         final ASTStmtListNode zeroStmtList = parseNumericIfBlock(Type.ZERO);
 
-
-        m_lexer.expect(Type.RBRACE);
         return new ASTNumericIfNode(predicate, positiveStmtList, negativeStmtList, zeroStmtList);
     }
 
