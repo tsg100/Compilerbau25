@@ -42,7 +42,7 @@ public class StmtParser {
         Token curToken = m_lexer.lookAhead();
         final List<ASTStmtNode> stmtList = new ArrayList<>();
 
-        while (curToken.m_type != com.compiler.TokenIntf.Type.RBRACE) {
+        while (curToken.m_type != com.compiler.TokenIntf.Type.RBRACE && curToken.m_type != Type.CASE) { // RBrace and Case in Follow set of Statementlist
             stmtList.add(parseStmt());
             curToken = m_lexer.lookAhead();
         }
@@ -79,6 +79,10 @@ public class StmtParser {
 
         if (type == TokenIntf.Type.NUMERIC_IF) {
             return parseNumericIfStmt();
+        }
+
+        if (type == Type.SWITCH) {
+            return parseSwitchStmt();
         }
 
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
@@ -229,5 +233,40 @@ public class StmtParser {
     	m_lexer.expect(Type.SEMICOLON);
     	
     	return new ASTExecuteNTimesNode(count, stmtlistNode);
+    }
+
+    private ASTStmtNode parseSwitchStmt() throws Exception {
+        // switch_statement -> SWITCH LPAREN expression RPAREN LBRACE case_list RBRACE
+        m_lexer.expect(Type.SWITCH);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode expression = m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.LBRACE);
+        ASTCaseListNode caseList = parseCaseList();
+        m_lexer.expect(Type.RBRACE);
+        return new ASTSwitchStmtNode(expression, caseList);
+    }
+
+    private ASTCaseListNode parseCaseList() throws Exception {
+        // case_list -> case_item case_list | epsilon
+        Token curToken = m_lexer.lookAhead();
+        final List<ASTCaseNode> caseList = new ArrayList<>();
+
+        while (curToken.m_type == Type.CASE) {
+            caseList.add(parseCaseStmt());
+            curToken = m_lexer.lookAhead();
+        }
+        return new ASTCaseListNode(caseList);
+    }
+
+    private ASTCaseNode parseCaseStmt() throws Exception {
+        // case_item -> CASE LITERAL COLON statement_list
+        m_lexer.expect(Type.CASE);
+        Token curToken = m_lexer.lookAhead();
+        m_lexer.expect(Type.INTEGER);
+        ASTIntegerLiteralNode value = new ASTIntegerLiteralNode(curToken.m_value); //Integer
+        m_lexer.expect(Type.DOUBLECOLON); // should be renamed to COLON as double colon is "::"
+        ASTStmtListNode stmtList = parseStmtlist();
+        return new ASTCaseNode(value, stmtList);
     }
 }
