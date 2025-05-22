@@ -1,5 +1,11 @@
 package com.compiler.ast;
 
+import com.compiler.CompileEnvIntf;
+import com.compiler.InstrIntf;
+import com.compiler.instr.InstrJump;
+import com.compiler.instr.InstrPushStack;
+import com.compiler.instr.InstrReturn;
+
 import java.io.OutputStreamWriter;
 
 public class ASTReturnStmtNode extends ASTStmtNode {
@@ -17,5 +23,11 @@ public class ASTReturnStmtNode extends ASTStmtNode {
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
 
+    }
+    @Override
+    public void codegen(CompileEnvIntf env) {
+        InstrIntf result = m_expr.codegen(env);
+        env.addInstr(new InstrPushStack(result));
+        env.addInstr(new InstrReturn());
     }
 }

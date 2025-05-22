@@ -1,0 +1,23 @@
+package com.compiler.instr;
+
+import com.compiler.ExecutionEnvIntf;
+import com.compiler.InstrIntf;
+
+import java.io.OutputStreamWriter;
+
+public class InstrPushStack extends InstrIntf {
+    InstrIntf m_instruction;
+    public InstrPushStack(InstrIntf instruction) {
+        m_instruction = instruction;
+    }
+
+    @Override
+    public void execute(ExecutionEnvIntf env) throws Exception {
+        env.push(m_instruction.getValue());
+    }
+
+    @Override
+    public void trace(OutputStreamWriter os) throws Exception {
+        os.write("PUSH %%"+m_instruction.getId());
+    }
+}

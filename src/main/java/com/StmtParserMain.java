@@ -12,8 +12,13 @@ public class StmtParserMain {
           DECLARE b;
           a = 1 + 2;
           b = 5;
+          FUNCTION foo(c,d){
+          RETURN 0;
+          };
+          c = 1;
+          PRINT c;
           PRINT a ? b + 1 : -1;
-          PRINT 1 + 2;
+          PRINT CALL foo(a,b);
           PRINT 3 + 4;
         }
         """;
