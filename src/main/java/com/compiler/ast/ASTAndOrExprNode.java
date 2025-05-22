@@ -50,8 +50,11 @@ public class ASTAndOrExprNode extends ASTExprNode {
         Integer lhsConst = m_operand0.constFold();
         Integer rhsConst = m_operand1.constFold();
         if (lhsConst != null && rhsConst != null) {
-
-                m_constValue = eval();
+            if (m_operator == Type.AND) {
+                m_constValue = lhsConst == 0 || rhsConst == 0 ? 0 : 1;
+            } else {
+                m_constValue = lhsConst == 0 && rhsConst == 0 ? 0 : 1;
+            }
 
         } else {
             m_constValue = null;
