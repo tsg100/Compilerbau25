@@ -2,18 +2,24 @@ package com.compiler;
 import com.compiler.TokenIntf.Type;
 import com.compiler.ast.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExpressionParser {
     private Lexer m_lexer;
     private SymbolTableIntf m_symbolTable;
+    private FunctionTableIntf m_functionTable;
 
     public ExpressionParser(Lexer lexer) {
         m_lexer = lexer;
         m_symbolTable = new SymbolTable();
+        m_functionTable = new FunctionTable();
     }
 
-    public ExpressionParser(Lexer lexer, SymbolTableIntf symbolTable) {
+    public ExpressionParser(Lexer lexer, SymbolTableIntf symbolTable, FunctionTableIntf functionTable) {
         m_lexer = lexer;
         m_symbolTable = symbolTable;
+        m_functionTable = functionTable;
     }
 
     public ASTExprNode parseExpression(String val) throws Exception {
@@ -55,11 +61,11 @@ public class ExpressionParser {
     }
 
     ASTExprNode getDashExpr() throws Exception {
-        ASTExprNode result = getParantheseExpr();
+        ASTExprNode result = getCallExpr();
         while (m_lexer.lookAhead().m_type == Type.TDASH) {
             Token curToken = m_lexer.lookAhead();
             m_lexer.advance();
-            ASTExprNode operand = getParantheseExpr();
+            ASTExprNode operand = getCallExpr();
             result = new ASTTDashNode(result, operand);
         }
         return result;
@@ -218,6 +224,45 @@ public class ExpressionParser {
     ASTExprNode getAndOrExpr() throws Exception {
         //handled separately
         return getOrExpr();
+    }
+
+    ASTExprNode getCallExpr() throws Exception {
+        if(m_lexer.m_currentToken.m_type != TokenIntf.Type.CALL) {
+            return getParantheseExpr();
+        }else {
+            m_lexer.advance();
+            String funcName = m_lexer.m_currentToken.m_value;
+            FunctionInfo functionInfo = m_functionTable.getFunction(funcName);
+            if(functionInfo == null) {
+                m_lexer.throwCompilerException(String.format("%s not declared" , funcName), "");
+            }
+
+            m_lexer.expect(TokenIntf.Type.IDENT);
+            m_lexer.expect(TokenIntf.Type.LPAREN);
+            List<ASTExprNode> argumentList = getArgumentList();
+            if(argumentList.size() != functionInfo.varNames.size()){
+                m_lexer.throwCompilerException(String.format("%s function parameters for function %s" , argumentList.size() < functionInfo.varNames.size()? "Not enough": "To many", funcName), "");
+            }
+
+            m_lexer.expect(TokenIntf.Type.RPAREN);
+            return new ASTCallExprNode(funcName, argumentList);
+        }
+
+    }
+
+    private List<ASTExprNode> getArgumentList() throws Exception {
+        List<ASTExprNode> argumentList = new ArrayList<>();
+
+        if(m_lexer.m_currentToken.m_type == Type.RPAREN){
+            return argumentList;
+        }else {
+            argumentList.add(getQuestionMarkExpr());
+            while (m_lexer.m_currentToken.m_type == Type.COMMA) {
+                m_lexer.advance();
+                argumentList.add(getQuestionMarkExpr());
+            }
+            return argumentList;
+        }
     }
 
     ASTExprNode getQuestionMarkExpr() throws Exception {
