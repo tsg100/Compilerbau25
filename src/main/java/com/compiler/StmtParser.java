@@ -83,6 +83,10 @@ public class StmtParser {
             return parseNumericIfStmt();
         }
 
+        if (type == Type.IF) {
+            return parseIfElseStmt();
+        }
+
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
         return null; // unreachable
     }
@@ -197,6 +201,38 @@ public class StmtParser {
         m_lexer.expect(Type.RBRACE);
 
         return new ASTJumpBlockNode(stmtlistNode);
+    }
+
+
+    ASTStmtNode parseIfElseStmt() throws Exception {
+
+        // ifStmt -> IF LPAREN condition RPAREN LBRACE stmtList RBRACE elseStmt
+        // elseStmt -> eps
+        // elseStmt -> ELSE continueStmt
+        // continueStmt -> ifStmt
+        // continueStmt -> LBRACE stmtList RBRACE
+
+        m_lexer.expect(Type.IF);
+        m_lexer.expect(Type.LPAREN);
+        ASTExprNode condition = this.m_exprParser.getQuestionMarkExpr();
+        m_lexer.expect(Type.RPAREN);
+        m_lexer.expect(Type.LBRACE);
+        ASTStmtListNode ifStmtList = this.parseStmtlist();
+        m_lexer.expect(Type.RBRACE);
+
+        if(m_lexer.lookAhead().m_type == Type.ELSE) {
+            m_lexer.expect(Type.ELSE);
+            if(m_lexer.lookAhead().m_type == Type.LBRACE) {
+                m_lexer.expect(Type.LBRACE);
+                ASTStmtListNode elseStmtList = this.parseStmtlist();
+                m_lexer.expect(Type.RBRACE);
+                return new ASTIfElseNode(condition, ifStmtList, elseStmtList);
+            }
+            if(m_lexer.lookAhead().m_type == Type.IF) {
+                return new ASTIfElseNode(condition, ifStmtList, parseStmtlist());
+            }
+        }
+        return new ASTIfElseNode(condition, ifStmtList, null);
     }
 
 
