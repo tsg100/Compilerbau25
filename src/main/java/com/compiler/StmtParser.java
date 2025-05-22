@@ -100,7 +100,7 @@ public class StmtParser {
         m_lexer.expect(TokenIntf.Type.IDENT);
         m_lexer.expect(Type.LPAREN);
         List<String> parameterList = parseParameterList();
-        parameterList.forEach(e -> m_symbolTable.createSymbol(e));
+        parameterList.forEach(m_symbolTable::createSymbol);
         m_lexer.expect(TokenIntf.Type.RPAREN);
 
         m_lexer.expect(TokenIntf.Type.LBRACE);
