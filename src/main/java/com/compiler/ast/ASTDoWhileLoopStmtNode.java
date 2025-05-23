@@ -34,20 +34,16 @@ public class ASTDoWhileLoopStmtNode extends ASTStmtNode {
 
     @Override
     public void codegen(CompileEnvIntf env) {
-        InstrBlock whileHead = env.createBlock("DoWhileLoopHead");
-        InstrBlock whileBody = env.createBlock("DoWhileLoopBody");
+        InstrBlock doWhile = env.createBlock("DoWhileBlock");
         InstrBlock exit = env.createBlock("DoWhileExitBlock");
-        InstrJump jumpToBody = new InstrJump(whileBody);
-        env.addInstr(jumpToBody);
 
-        env.setCurrentBlock(whileBody);
+        InstrJump jumpToLoop = new InstrJump(doWhile);
+        env.addInstr(jumpToLoop);
+
+        env.setCurrentBlock(doWhile);
         m_loopBody.codegen(env);
-        whileBody.addInstr(new InstrJump(whileHead));
-
-        env.setCurrentBlock(whileHead);
-        InstrCondJump conditionalJump = new InstrCondJump(m_predicate.codegen(env), whileBody, exit);
-
-        whileHead.addInstr(conditionalJump);
+        InstrCondJump conditionalJump = new InstrCondJump(m_predicate.codegen(env), doWhile, exit);
+        doWhile.addInstr(conditionalJump);
 
         env.setCurrentBlock(exit);
     }
