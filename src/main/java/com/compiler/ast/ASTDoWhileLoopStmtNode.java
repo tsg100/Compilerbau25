@@ -43,7 +43,7 @@ public class ASTDoWhileLoopStmtNode extends ASTStmtNode {
         env.setCurrentBlock(doWhile);
         m_loopBody.codegen(env);
         InstrCondJump conditionalJump = new InstrCondJump(m_predicate.codegen(env), doWhile, exit);
-        doWhile.addInstr(conditionalJump);
+        env.addInstr(conditionalJump);
 
         env.setCurrentBlock(exit);
     }

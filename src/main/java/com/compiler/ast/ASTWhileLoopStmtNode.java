@@ -41,8 +41,10 @@ public class ASTWhileLoopStmtNode extends ASTStmtNode {
         env.addInstr(jumpToHead);
 
         env.setCurrentBlock(whileBody);
+
         m_loopBody.codegen(env);
-        whileBody.addInstr(new InstrJump(whileHead));
+
+        env.addInstr(new InstrJump(whileHead));
 
         env.setCurrentBlock(whileHead);
         InstrCondJump conditionalJump = new InstrCondJump(m_predicate.codegen(env), whileBody, exit);
