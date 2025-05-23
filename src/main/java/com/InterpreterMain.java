@@ -7,20 +7,7 @@ public class InterpreterMain {
     public static void main(String[] args) throws Exception {
         String input = new String("""
           {
-          
-            FUNCTION minüß(x){
-                RETURN x - 1;
-            };
-          
-            FUNCTION add(a,b){
-                PRINT 42;
-                DECLARE c;
-                c = 2;
-                RETURN CALL minüß(CALL minüß(a+b + c));
-            };
-            
-            PRINT CALL add(1,2);
-            PRINT 1;
+            PRINT 4 + 3 - 2;
           }
                 """);
         com.compiler.CompileEnv compileEnv = new com.compiler.CompileEnv(input, false);
