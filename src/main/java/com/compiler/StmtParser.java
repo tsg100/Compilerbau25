@@ -92,25 +92,35 @@ public class StmtParser {
     }
 
     public ASTStmtNode parseFunctionStmt() throws Exception {
+        // functionDecl: FUNCTION IDENTIFIER RPAREN paramList RPAREN LBRACE functionBody RBRACE SEMICOLON
         m_lexer.expect(Type.FUNCTION);
         String functionName = m_lexer.m_currentToken.m_value;
+
         m_lexer.expect(TokenIntf.Type.IDENT);
         m_lexer.expect(Type.LPAREN);
-        List<String> parameterList = parseParameterList();
-        parameterList.forEach(e -> m_symbolTable.createSymbol(e));
-        m_lexer.expect(TokenIntf.Type.RPAREN);
 
+        List<String> parameterList = parseParameterList();
+        parameterList.forEach(m_symbolTable::createSymbol);
+        m_functionTable.createFunction(functionName, parameterList);
+
+        m_lexer.expect(TokenIntf.Type.RPAREN);
         m_lexer.expect(TokenIntf.Type.LBRACE);
+
         List<ASTStmtNode> functionBody = parseFunctionBody();
+
         m_lexer.expect(TokenIntf.Type.RBRACE);
         m_lexer.expect(Type.SEMICOLON);
-        m_functionTable.createFunction(functionName, parameterList);
+
         return new ASTFunctionStmtNode(functionName, parameterList, functionBody);
     }
 
     private List<ASTStmtNode> parseFunctionBody() throws Exception {
+        // functionBody: returnStmt | stmt functionBody
         List<ASTStmtNode> stmtList = new ArrayList<>();
         while(m_lexer.m_currentToken.m_type != Type.RETURN){
+            if(m_lexer.m_currentToken.m_type == Type.RBRACE){
+                m_lexer.throwCompilerException("Invalid end of function body", "RETURN");
+            }
             stmtList.add(parseStmt());
         }
         stmtList.add(parseReturnStmt());
@@ -118,6 +128,7 @@ public class StmtParser {
     }
 
     private ASTStmtNode parseReturnStmt() throws Exception {
+        // returnStmt: RETURN expr
         m_lexer.expect(Type.RETURN);
         ASTStmtNode returnStmtNode = new ASTReturnStmtNode(m_exprParser.getQuestionMarkExpr());
         m_lexer.expect(Type.SEMICOLON);
@@ -125,6 +136,8 @@ public class StmtParser {
     }
 
     private List<String> parseParameterList() throws Exception {
+        // paramList: IDENTIFIER paramListPos | eps
+        // paramListPost: eps | COMMA IDENFIER paramListPost
         List<String> parameterList = new ArrayList<>();
         if(m_lexer.m_currentToken.m_type != Type.IDENT){
             return parameterList;
@@ -143,7 +156,6 @@ public class StmtParser {
 
     public ASTStmtNode parsePrintStmt() throws Exception {
         m_lexer.expect(Type.PRINT);
-
         ASTPrintStmtNode astPrintStmtNode = new ASTPrintStmtNode(m_exprParser.getQuestionMarkExpr());
         m_lexer.expect(Type.SEMICOLON);
         return astPrintStmtNode;
