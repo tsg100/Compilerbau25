@@ -1,5 +1,7 @@
 package com.compiler.ast;
 
+import com.compiler.CompileEnvIntf;
+
 import java.io.OutputStreamWriter;
 
 public class ASTCaseNode extends ASTStmtNode {

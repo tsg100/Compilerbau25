@@ -18,11 +18,6 @@ public class ASTCaseListNode extends ASTStmtNode {
     }
 
     @Override
-    public void codegen(CompileEnvIntf env) {
-        m_caseList.forEach(caseItem->caseItem.codegen(env));
-    }
-
-    @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
         outStream.write(indent);
         outStream.write("ASTCaseListNode\n");

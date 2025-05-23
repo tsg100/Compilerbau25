@@ -76,6 +76,6 @@ public class InterpreterSwitchStmtTest extends InterpreterTestBase{
                     PRINT out;
                 }
                 """;
-        testInterpreter(program, "5\n");
+        testInterpreter(program, "4\n3\n");
     }
 }
