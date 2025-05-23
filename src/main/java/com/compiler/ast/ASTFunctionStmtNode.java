@@ -7,7 +7,7 @@ import java.util.List;
 import com.compiler.CompileEnvIntf;
 import com.compiler.InstrBlock;
 import com.compiler.instr.InstrAssign;
-import com.compiler.instr.InstrPopStack;
+import com.compiler.instr.InstrPopValueStack;
 
 public class ASTFunctionStmtNode extends ASTStmtNode {
     String m_functionName;
@@ -23,39 +23,40 @@ public class ASTFunctionStmtNode extends ASTStmtNode {
 
     @Override
     public void execute(OutputStreamWriter out) {
-
+        // nothing to do at runtime
     }
 
-    /*
-    * 1. momentanen Block speichern
-    * 2. Body Block der Function erstellen
-    * 3. Current Environment Block auf Body Block setzen
-    * 4. Assign Instructions der Variablen mit PopInstructions
-    * 5. Codegenerierung des Function Bodys
-    * 6. body Block in die FunctionTable eintragen
-    * 7. Current Environment Block zu ursprünglichen Block zuweisen
-    */
     @Override
     public void codegen(CompileEnvIntf env) {
-        InstrBlock exitBlock = env.getCurrentBlock();
+        InstrBlock codegenEntryBlock = env.getCurrentBlock();
 
-        InstrBlock bodyBlock = env.createBlock("function_"+m_functionName);
-        env.setCurrentBlock(bodyBlock);
-        Collections.reverse(m_parameterList);
-        for (String parameter : m_parameterList) {
-            InstrPopStack popInstr = new InstrPopStack();
-            env.addInstr(popInstr);
-            env.addInstr(new InstrAssign(env.getSymbolTable().getSymbol(parameter), popInstr));
-        }
-        m_functionBody.forEach(s -> s.codegen(env));
+        InstrBlock functionBodyBlock = env.createBlock("function_"+m_functionName);
+        env.setCurrentBlock(functionBodyBlock);
 
-        env.getFunctionTable().getFunction(m_functionName).m_body = bodyBlock;
-
-        env.setCurrentBlock(exitBlock);
+        m_parameterList.stream()
+            .sorted(Collections.reverseOrder())
+            .map(env.getSymbolTable()::getSymbol)
+            .forEach(parameter -> {
+                InstrPopValueStack popStackInstr = new InstrPopValueStack();
+                env.addInstr(popStackInstr);
+                InstrAssign assignInstr = new InstrAssign(parameter, popStackInstr);
+                env.addInstr(assignInstr);
+            });
+        
+        m_functionBody.forEach(stmt -> stmt.codegen(env));
+        
+        env.getFunctionTable().getFunction(m_functionName).m_body = functionBodyBlock;
+        
+        env.setCurrentBlock(codegenEntryBlock);
     }
 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
-
+        outStream.write(indent);
+        outStream.write("ASTFunctionStmtNode ");
+        outStream.write("\n");
+        for (ASTStmtNode astStmtNode : m_functionBody) {
+            astStmtNode.print(outStream, indent + "  ");
+        }    
     }
 }

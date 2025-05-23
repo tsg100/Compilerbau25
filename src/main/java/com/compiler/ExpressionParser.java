@@ -227,17 +227,18 @@ public class ExpressionParser {
     }
 
     ASTExprNode getCallExpr() throws Exception {
+        // callExpr: CALL IDENTIFIER LPAREN argList RPAREN
         if(m_lexer.m_currentToken.m_type != TokenIntf.Type.CALL) {
             return getParantheseExpr();
         }else {
             m_lexer.advance();
             String funcName = m_lexer.m_currentToken.m_value;
+            m_lexer.expect(TokenIntf.Type.IDENT);
             FunctionInfo functionInfo = m_functionTable.getFunction(funcName);
             if(functionInfo == null) {
                 m_lexer.throwCompilerException(String.format("%s not declared" , funcName), "");
             }
 
-            m_lexer.expect(TokenIntf.Type.IDENT);
             m_lexer.expect(TokenIntf.Type.LPAREN);
             List<ASTExprNode> argumentList = getArgumentList();
             if(argumentList.size() != functionInfo.varNames.size()){
@@ -251,8 +252,9 @@ public class ExpressionParser {
     }
 
     private List<ASTExprNode> getArgumentList() throws Exception {
+        // argList: expr argListPost | eps
+        // argListPost: eps | COMMA expr argListPost
         List<ASTExprNode> argumentList = new ArrayList<>();
-
         if(m_lexer.m_currentToken.m_type == Type.RPAREN){
             return argumentList;
         }else {

@@ -1,9 +1,7 @@
 package com.compiler.ast;
 
 import com.compiler.CompileEnvIntf;
-import com.compiler.InstrIntf;
-import com.compiler.instr.InstrJump;
-import com.compiler.instr.InstrPushStack;
+import com.compiler.instr.InstrPushValueStack;
 import com.compiler.instr.InstrReturn;
 
 import java.io.OutputStreamWriter;
@@ -17,17 +15,19 @@ public class ASTReturnStmtNode extends ASTStmtNode {
 
     @Override
     public void execute(OutputStreamWriter out) {
-
+        // nothing to do
     }
 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
-
+        outStream.write(indent);
+        outStream.write("ASTReturnStmtNode ");
+        outStream.write("\n");
+        m_expr.print(outStream, indent + "  ");
     }
     @Override
     public void codegen(CompileEnvIntf env) {
-        InstrIntf result = m_expr.codegen(env);
-        env.addInstr(new InstrPushStack(result));
+        env.addInstr(new InstrPushValueStack(m_expr.codegen(env)));
         env.addInstr(new InstrReturn());
     }
 }

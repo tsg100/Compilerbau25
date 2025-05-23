@@ -5,9 +5,9 @@ import com.compiler.InstrIntf;
 
 import java.io.OutputStreamWriter;
 
-public class InstrPopStack extends InstrIntf {
+public class InstrPopValueStack extends InstrIntf {
 
-    public InstrPopStack() {}
+    public InstrPopValueStack() {}
 
     @Override
     public void execute(ExecutionEnvIntf env) throws Exception {

@@ -5,9 +5,9 @@ import com.compiler.InstrIntf;
 
 import java.io.OutputStreamWriter;
 
-public class InstrPushStack extends InstrIntf {
+public class InstrPushValueStack extends InstrIntf {
     InstrIntf m_instruction;
-    public InstrPushStack(InstrIntf instruction) {
+    public InstrPushValueStack(InstrIntf instruction) {
         m_instruction = instruction;
     }
 
