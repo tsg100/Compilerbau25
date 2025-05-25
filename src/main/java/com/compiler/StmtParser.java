@@ -87,6 +87,14 @@ public class StmtParser {
             return parseIfElseStmt();
         }
 
+        if (type == Type.LOOP) {
+            return parseForLoop();
+        }
+
+        if(type == Type.BREAK){
+            return parseBreakNode();
+        }
+
         m_lexer.throwCompilerException("Invalid begin of statement", "DECLARE or IDENTIFIER or PRINT or NUMERIC_IF");
         return null; // unreachable
     }
@@ -302,6 +310,22 @@ public class StmtParser {
         m_lexer.expect(Type.RPAREN);
         m_lexer.expect(Type.SEMICOLON);
         return new ASTDoWhileLoopStmtNode(predicate, body);
+    }
+
+    public ASTStmtNode parseForLoop() throws Exception {
+        //loopstmt : loopstart [stmtlist] loopend
+        m_lexer.expect(Type.LOOP);
+        m_lexer.expect(Type.LBRACE);
+        ASTStmtListNode body = parseStmtlist();
+        m_lexer.expect(Type.RBRACE);
+        m_lexer.expect(Type.ENDLOOP);
+        return new ASTLoopStmtNode(body);
+
+    }
+
+    private ASTStmtNode parseBreakNode() throws Exception {
+        m_lexer.expect(Type.BREAK);
+        return new ASTBreakExprNode();
     }
     
     ASTStmtNode parseExecuteNTimesStmt() throws Exception {

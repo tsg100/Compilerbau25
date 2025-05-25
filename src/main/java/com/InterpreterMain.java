@@ -7,7 +7,15 @@ public class InterpreterMain {
     public static void main(String[] args) throws Exception {
         String input = new String("""
           {
-            PRINT 4 + 3 - 2;
+          DECLARE a;
+          a = 1;
+            LOOP{
+            PRINT(a);
+            a = a + 1;
+            IF(a > 10){
+            BREAK
+            }
+            }ENDLOOP
           }
                 """);
         com.compiler.CompileEnv compileEnv = new com.compiler.CompileEnv(input, false);
