@@ -91,7 +91,7 @@ public class StmtParser {
             return parseForLoop();
         }
 
-        if(type == Type.BREAK){
+        if(type == TokenIntf.Type.BREAK){
             return parseBreakNode();
         }
 
@@ -325,7 +325,7 @@ public class StmtParser {
 
     private ASTStmtNode parseBreakNode() throws Exception {
         m_lexer.expect(Type.BREAK);
-        return new ASTBreakExprNode();
+        return new ASTBreakStmtNode();
     }
     
     ASTStmtNode parseExecuteNTimesStmt() throws Exception {

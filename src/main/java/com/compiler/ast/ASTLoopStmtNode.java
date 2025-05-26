@@ -22,22 +22,30 @@ public class ASTLoopStmtNode extends ASTStmtNode{
 
     @Override
     public void execute(OutputStreamWriter out) {
-        for(ASTStmtNode node : m_body.stmts){
-            if((node instanceof ASTBreakExprNode)){
-                node.execute(out);
-            }
-        }
+        m_body.execute(out);
     }
 
     @Override
     public void codegen(CompileEnvIntf env){
 
+        InstrBlock loopBody = env.createBlock("LoopBody");
+        InstrBlock loopExit = env.createBlock("LoopExit");
+        env.pushLoopStack(loopExit);
+        InstrJump jumpToBody = new InstrJump(loopBody);
+        env.addInstr(jumpToBody);
+
+        env.setCurrentBlock(loopBody);
+        m_body.codegen(env);
+        env.addInstr(jumpToBody);
+
+        env.setCurrentBlock(loopExit);
 
 
     }
 
     @Override
     public void print(OutputStreamWriter outStream, String indent) throws Exception {
-
+        outStream.write(indent + "LOOP\n");
+        m_body.print(outStream, "  " + indent);
     }
 }
