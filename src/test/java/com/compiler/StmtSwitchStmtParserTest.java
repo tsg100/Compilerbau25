@@ -77,6 +77,6 @@ public class StmtSwitchStmtParserTest extends StmtParserTestBase{
                     PRINT out;
                 }
                 """;
-        testParser(program, "5\n");
+        testParser(program, "4\n3\n");
     }
 }
