@@ -28,8 +28,8 @@ PRINT %0
                 """;
         String expected = """
 entry:
-%2 = LITERAL 1
-PRINT %2
+%0 = LITERAL 1
+PRINT %0
 
 """;
         testInterpreter(input, expected);
