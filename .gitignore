@@ -16,3 +16,7 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .idea
+
+# antlr results
+src/main/java/com/compiler/.antlr
+src/main/java/com/compiler/antlr
