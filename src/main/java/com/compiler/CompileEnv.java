@@ -52,6 +52,7 @@ public class CompileEnv implements CompileEnvIntf {
     }
 
     public void compile() throws Exception {
+        InstrIntf.resetNextId();
         m_entry = new InstrBlock("entry");
         m_blockList.add(m_entry);
         m_currentBlock = m_entry;

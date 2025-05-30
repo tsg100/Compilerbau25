@@ -32,4 +32,11 @@ public abstract class InstrIntf {
 	    return m_id;
 	}
 
+	/**
+	 * reset m_nextId
+	 */
+	static public void resetNextId() {
+		m_nextId = 0;
+	}
+
 }
