@@ -30,6 +30,20 @@ public class ExprEval extends com.compiler.antlr.languageBaseVisitor<Integer> {
      // andOrExpr
 
      // cmpExpr
+    @Override
+    public Integer visitExprCmpOp(com.compiler.antlr.languageParser.ExprCmpOpContext ctx) {
+    ExprContext operand0 = ctx.expr(0);
+    int operand0Value = visit(operand0);
+    ExprContext operand1 = ctx.expr(1);
+    int operand1Value = visit(operand1);
+    if(ctx.CMPOP().getText().equals("==")){
+        return operand0Value == operand1Value ? 1 : 0;
+    }else if(ctx.CMPOP().getText().equals(">")){
+        return operand0Value > operand1Value ? 1 : 0;
+    }else{
+        return operand0Value < operand1Value ? 1 : 0;
+    }
+    }
 
      // questionMarkExpr
 

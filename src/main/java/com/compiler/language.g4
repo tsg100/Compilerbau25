@@ -19,6 +19,8 @@ expr:
      // andOrExpr
 
      // cmpExpr
+     expr CMPOP expr #exprCmpOp |
+     NUMBER #exprCmpOp
 
      // questionMarkExpr
 
@@ -48,7 +50,7 @@ SUMOP: '+' | '-';
 // andOrExpr tokens
 
 // cmpExpr tokens
-
+CMPOP: '==' | '<' | '>';
 // questionMarkExpr tokens
 
 
