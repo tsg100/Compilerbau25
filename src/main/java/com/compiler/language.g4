@@ -10,7 +10,7 @@ expr:
 
      // sumExpr
      expr SUMOP expr #exprSumOp |
-     NUMBER #exprNumber;
+     NUMBER #exprNumber |
 
      // shifExpr
 
@@ -22,6 +22,7 @@ expr:
 
      // questionMarkExpr
 
+;
 
 // tokens
 NUMBER: [0-9]+;
